@@ -6,6 +6,17 @@ export type DatabaseProvider = "supabase" | "firebase" | "mongodb" | "mysql" | "
 // Default: "supabase"
 export const DB_PROVIDER: DatabaseProvider = (process.env.NEXT_PUBLIC_DB_PROVIDER as DatabaseProvider) || "supabase"
 
+export const isNextAuthProvider = DB_PROVIDER === "mongodb" || DB_PROVIDER === "mysql" || DB_PROVIDER === "mock"
+export const isSupabaseProvider = DB_PROVIDER === "supabase"
+export const isFirebaseProvider = DB_PROVIDER === "firebase"
+
+export const dbConfig = {
+  provider: DB_PROVIDER,
+  isNextAuth: isNextAuthProvider,
+  isSupabase: isSupabaseProvider,
+  isFirebase: isFirebaseProvider,
+}
+
 export const DB_CONFIG = {
   supabase: {
     url: process.env.NEXT_PUBLIC_SUPABASE_URL,
