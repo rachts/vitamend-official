@@ -2,30 +2,19 @@
 import { MongoClient, type Db, ObjectId } from "mongodb"
 import { DB_CONFIG } from "./config"
 
-let client: MongoClient | null = null
-let db: Db | null = null
+let cachedClient: MongoClient | null = null
+let cachedDb: Db | null = null
 
-export async function getMongoDb(): Promise<Db> {
-  if (db) return db
+export async function getDb(): Promise<Db> {
+  if (cachedDb) return cachedDb
 
-  const uri = DB_CONFIG.mongodb.uri
-  if (!uri) {
-    throw new Error("MONGODB_URI environment variable is not set")
+  if (!cachedClient) {
+    cachedClient = new MongoClient(DB_CONFIG.MONGODB_URI)
+    await cachedClient.connect()
   }
 
-  client = new MongoClient(uri)
-  await client.connect()
-  db = client.db(DB_CONFIG.mongodb.dbName)
-
-  return db
-}
-
-export async function closeMongoDb(): Promise<void> {
-  if (client) {
-    await client.close()
-    client = null
-    db = null
-  }
+  cachedDb = cachedClient.db(DB_CONFIG.DB_NAME)
+  return cachedDb
 }
 
 export { ObjectId }
