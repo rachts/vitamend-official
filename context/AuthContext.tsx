@@ -2,8 +2,10 @@
 
 import type React from "react"
 import { createContext, useContext, useEffect, useState, useCallback } from "react"
+import { useSession, signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "next-auth/react"
 import { createBrowserClient } from "@supabase/ssr"
 import type { User } from "@supabase/supabase-js"
+import { dbConfig } from "@/lib/db/config"
 
 interface AuthUser {
   uid: string
@@ -25,18 +27,20 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-// Singleton Supabase client
+// Singleton Supabase client (only used for Supabase provider)
 let supabaseClient: ReturnType<typeof createBrowserClient> | null = null
 
 function getSupabaseClient() {
   if (!supabaseClient) {
     supabaseClient = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     )
   }
   return supabaseClient
 }
+
+const useNextAuth = dbConfig.isNextAuth
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
@@ -44,19 +48,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  // NextAuth session (for MongoDB/MySQL)
+  const { data: session, status } = useSession()
 
   useEffect(() => {
-    if (!mounted) return
+    setMounted(true)
+    console.log(
+      "[v0] Auth Provider mounted, using:",
+      useNextAuth ? "NextAuth" : "Supabase",
+      "| DB Provider:",
+      dbConfig.provider,
+    )
+  }, [])
+
+  // Handle NextAuth session
+  useEffect(() => {
+    if (!mounted || !useNextAuth) return
+
+    console.log("[v0] NextAuth status:", status, "| Session:", session ? "exists" : "null")
+
+    if (status === "loading") {
+      setLoading(true)
+      return
+    }
+
+    if (session?.user) {
+      setUser({
+        uid: (session.user as any).id || session.user.email || "",
+        email: session.user.email || null,
+        name: session.user.name || null,
+        image: session.user.image || null,
+        role: (session.user as any).role || "donor",
+      })
+    } else {
+      setUser(null)
+    }
+    setLoading(false)
+  }, [session, status, mounted])
+
+  // Handle Supabase session (for Supabase/Firebase)
+  useEffect(() => {
+    if (!mounted || useNextAuth) return
 
     const supabase = getSupabaseClient()
     let cancelled = false
 
     const setupAuth = async () => {
       try {
-        // Get initial session
         const {
           data: { session },
           error: sessionError,
@@ -78,7 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false)
         }
 
-        // Listen for auth changes
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -106,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const fetchUserProfile = async (supabaseUser: User) => {
       try {
+        const supabase = getSupabaseClient()
         const { data: profile } = await supabase.from("profiles").select("*").eq("id", supabaseUser.id).single()
 
         setUser({
@@ -117,7 +155,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
         setError(null)
       } catch (err) {
-        // Profile might not exist yet, use basic user data
         setUser({
           uid: supabaseUser.id,
           email: supabaseUser.email || null,
@@ -136,56 +173,111 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [mounted])
 
+  // Sign in with email/password
   const signIn = useCallback(async (email: string, password: string) => {
-    const supabase = getSupabaseClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
-  }, [])
-
-  const signUp = useCallback(async (email: string, password: string, name: string, role = "donor") => {
-    const supabase = getSupabaseClient()
-
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || window.location.origin,
-        data: {
-          full_name: name,
-          name: name,
-        },
-      },
-    })
-
-    if (error) throw error
-
-    // Create profile after signup
-    if (data.user) {
-      await supabase.from("profiles").upsert({
-        id: data.user.id,
-        name,
+    console.log("[v0] Sign in with email, using:", useNextAuth ? "NextAuth" : "Supabase")
+    if (useNextAuth) {
+      const result = await nextAuthSignIn("credentials", {
         email,
-        role,
+        password,
+        redirect: false,
       })
+      if (result?.error) {
+        throw new Error(result.error)
+      }
+    } else {
+      const supabase = getSupabaseClient()
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
     }
   }, [])
 
-  const signInWithGoogle = useCallback(async () => {
-    const supabase = getSupabaseClient()
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
-      },
-    })
-    if (error) throw error
+  // Sign up with email/password
+  const signUp = useCallback(async (email: string, password: string, name: string, role = "donor") => {
+    console.log("[v0] Sign up, using:", useNextAuth ? "NextAuth" : "Supabase")
+    if (useNextAuth) {
+      // Register user via API
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name, role }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "Registration failed")
+      }
+
+      // Auto sign in after registration
+      const result = await nextAuthSignIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        throw new Error(result.error)
+      }
+    } else {
+      const supabase = getSupabaseClient()
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || window.location.origin,
+          data: {
+            full_name: name,
+            name: name,
+          },
+        },
+      })
+
+      if (error) throw error
+
+      if (data.user) {
+        await supabase.from("profiles").upsert({
+          id: data.user.id,
+          name,
+          email,
+          role,
+        })
+      }
+    }
   }, [])
 
+  // Sign in with Google
+  const signInWithGoogle = useCallback(async () => {
+    console.log("[v0] Google Sign In, using:", useNextAuth ? "NextAuth" : "Supabase", "| Provider:", dbConfig.provider)
+
+    if (useNextAuth) {
+      console.log("[v0] Calling nextAuthSignIn('google')")
+      await nextAuthSignIn("google", {
+        callbackUrl: "/dashboard",
+      })
+    } else {
+      console.log("[v0] Calling Supabase OAuth")
+      const supabase = getSupabaseClient()
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`,
+        },
+      })
+      if (error) throw error
+    }
+  }, [])
+
+  // Sign out
   const signOut = useCallback(async () => {
-    const supabase = getSupabaseClient()
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-    setUser(null)
+    if (useNextAuth) {
+      await nextAuthSignOut({ callbackUrl: "/" })
+    } else {
+      const supabase = getSupabaseClient()
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      setUser(null)
+    }
   }, [])
 
   return (
