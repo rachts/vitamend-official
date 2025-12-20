@@ -1,5 +1,6 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
+import Providers from "./providers"
 import ClientWrappers from "./_client-wrappers"
 import Navigation from "@/components/navigation"
 import { FirebaseAuthProvider } from "@/components/auth-provider"
@@ -83,7 +84,6 @@ export const metadata: Metadata = {
     google: "your-google-verification-code",
   },
   category: "Healthcare",
-    generator: 'v0.app'
 }
 
 export const viewport: Viewport = {
@@ -114,15 +114,17 @@ export default function RootLayout({
       </head>
       <body className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300 antialiased min-h-screen">
         <ErrorBoundary>
-          <ClientWrappers>
-            <FirebaseAuthProvider>
-              <div className="h-16">
-                <Navigation />
-              </div>
-              <main className="min-h-[calc(100vh-4rem)]">{children}</main>
-              <Toaster />
-            </FirebaseAuthProvider>
-          </ClientWrappers>
+          <Providers>
+            <ClientWrappers>
+              <FirebaseAuthProvider>
+                <div className="h-16">
+                  <Navigation />
+                </div>
+                <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+                <Toaster />
+              </FirebaseAuthProvider>
+            </ClientWrappers>
+          </Providers>
         </ErrorBoundary>
       </body>
     </html>
