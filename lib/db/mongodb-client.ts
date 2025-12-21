@@ -17,4 +17,7 @@ export async function getDb(): Promise<Db> {
   return cachedDb
 }
 
+// ✅ Alias for backward compatibility with API routes
+export const getMongoDb = getDb
+
 export { ObjectId }
