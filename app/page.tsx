@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Heart, Users, Shield, Award, ArrowRight } from "lucide-react"
-
+import Snowfall from 'react-snowfall'
 const TiltCard = dynamic(() => import("@/components/tilt-card").then((m) => ({ default: m.TiltCard })), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-slate-200 dark:bg-slate-800 rounded-xl h-full" />,
@@ -100,7 +100,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-orange-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-500">
       <HeroAnimations />
-
+    <Snowfall color="82C3D9" />
       {/* Hero Section */}
       <section className="relative container mx-auto flex flex-col items-center gap-6 px-4 py-20 text-center overflow-hidden">
         {/* Ambient glows - CSS only, no JS */}
