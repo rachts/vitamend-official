@@ -1,5 +1,6 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
+import { Analytics } from "@vercel/analytics/next"
 import Providers from "./providers"
 import ClientWrappers from "./_client-wrappers"
 import Navigation from "@/components/navigation"
@@ -126,6 +127,7 @@ export default function RootLayout({
             </ClientWrappers>
           </Providers>
         </ErrorBoundary>
+        <Analytics />
       </body>
     </html>
   )
