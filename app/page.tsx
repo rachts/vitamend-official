@@ -108,9 +108,9 @@ export default function HomePage() {
     async function fetchStats() {
       try {
         const [medicinesRes, usersRes, volunteersRes] = await Promise.all([
-          fetch("http://localhost:5005/api/medicines").catch(() => null),
-          fetch("http://localhost:5005/api/auth/users").catch(() => null),
-          fetch("http://localhost:5005/api/volunteers").catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005"}/api/medicines`).catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005"}/api/auth/users`).catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005"}/api/volunteers`).catch(() => null),
         ]);
 
         const medicinesData = medicinesRes?.ok ? await medicinesRes.json() : [];
