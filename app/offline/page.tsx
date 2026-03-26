@@ -11,14 +11,14 @@ export default function OfflinePage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <WifiOff className="mx-auto h-12 w-12 text-[#2ea043] mb-4" />
-          <CardTitle className="text-2xl text-[#1a472a]">You're Offline</CardTitle>
+          <CardTitle className="text-2xl text-[#1a472a]">You&apos;re Offline</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-center">
           <p className="text-[#2d3748]">
-            It looks like you're currently offline. Some features of VitaMend may not be available until you reconnect.
+            It looks like you&apos;re currently offline. Some features of VitaMend may not be available until you reconnect.
           </p>
           <p className="text-[#2d3748]">
-            Don't worry, any forms you submit while offline will be automatically sent when you're back online.
+            Don&apos;t worry, any forms you submit while offline will be automatically sent when you&apos;re back online.
           </p>
           <div className="flex flex-col gap-2 mt-6">
             <Button asChild className="bg-[#2ea043] hover:bg-[#2ea043]/90">

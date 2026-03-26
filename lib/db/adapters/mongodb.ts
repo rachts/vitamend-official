@@ -11,12 +11,15 @@ import type {
   InitResult,
 } from "../types"
 
-const API_BASE = "/api/db"
+const API_BASE = "http://localhost:5005/api"
 
 async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  
   const response = await fetch(`${API_BASE}${endpoint}`, {
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     ...options,
   })
@@ -55,7 +58,8 @@ export const mongodbAdapter: DatabaseAdapter = {
 
   async getDonations(): Promise<Donation[]> {
     try {
-      return await apiCall<Donation[]>("/donations")
+      const res = await apiCall<any>("/donations")
+      return res.data || []
     } catch {
       return []
     }
@@ -63,7 +67,8 @@ export const mongodbAdapter: DatabaseAdapter = {
 
   async getDonationById(id: string): Promise<Donation | null> {
     try {
-      return await apiCall<Donation>(`/donations/${id}`)
+      const res = await apiCall<any>(`/donations/${id}`)
+      return res.data || null
     } catch {
       return null
     }
@@ -84,7 +89,8 @@ export const mongodbAdapter: DatabaseAdapter = {
   // Medicines
   async getMedicines(): Promise<Medicine[]> {
     try {
-      return await apiCall<Medicine[]>("/medicines")
+      const res = await apiCall<any>("/medicines")
+      return res.data || []
     } catch {
       return []
     }
@@ -92,7 +98,8 @@ export const mongodbAdapter: DatabaseAdapter = {
 
   async getMedicineById(id: string): Promise<Medicine | null> {
     try {
-      return await apiCall<Medicine>(`/medicines/${id}`)
+      const res = await apiCall<any>(`/medicines/${id}`)
+      return res.data || null
     } catch {
       return null
     }
@@ -112,7 +119,8 @@ export const mongodbAdapter: DatabaseAdapter = {
 
   async getVolunteers(): Promise<Volunteer[]> {
     try {
-      return await apiCall<Volunteer[]>("/volunteers")
+      const res = await apiCall<any>("/volunteers")
+      return res.data || []
     } catch {
       return []
     }
@@ -121,7 +129,8 @@ export const mongodbAdapter: DatabaseAdapter = {
   // Profiles
   async getProfile(userId: string): Promise<Profile | null> {
     try {
-      return await apiCall<Profile>(`/profiles/${userId}`)
+      const res = await apiCall<any>(`/profiles/${userId}`)
+      return res.data || null
     } catch {
       return null
     }

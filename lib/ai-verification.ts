@@ -17,7 +17,7 @@ export class AIVerification {
       })
 
       return await response.json()
-    } catch (error) {
+    } catch {
       return {
         isValid: false,
         confidence: 0,

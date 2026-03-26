@@ -46,7 +46,7 @@ class OfflineStorage {
         // Register for sync when online
         if ("serviceWorker" in navigator && "SyncManager" in window) {
           navigator.serviceWorker.ready.then((registration) => {
-            registration.sync.register("donation-sync").catch((err) => {
+            (registration as any).sync.register("donation-sync").catch((err: unknown) => {
               console.error("Background sync registration failed:", err)
             })
           })
@@ -78,7 +78,7 @@ class OfflineStorage {
         // Register for sync when online
         if ("serviceWorker" in navigator && "SyncManager" in window) {
           navigator.serviceWorker.ready.then((registration) => {
-            registration.sync.register("volunteer-sync").catch((err) => {
+            (registration as any).sync.register("volunteer-sync").catch((err: unknown) => {
               console.error("Background sync registration failed:", err)
             })
           })

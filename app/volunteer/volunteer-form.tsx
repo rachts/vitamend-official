@@ -59,7 +59,6 @@ export default function VolunteerForm() {
     register,
     handleSubmit,
     setValue,
-    watch,
     reset,
     formState: { errors },
   } = useForm<VolunteerFormData>({

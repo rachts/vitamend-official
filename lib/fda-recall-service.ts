@@ -60,7 +60,7 @@ export class FDARecallService {
     const names = new Set<string>()
 
     for (const pattern of commonPatterns) {
-      const matches = productDescription.matchAll(pattern)
+      const matches = Array.from(productDescription.matchAll(pattern))
       for (const match of matches) {
         names.add(match[1].trim())
       }

@@ -20,7 +20,7 @@ const navigation = [
 export function MobileNav() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
-  const { totalItems } = useCart()
+  const { state: { itemCount: totalItems } } = useCart()
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -38,7 +38,7 @@ export function MobileNav() {
           <SheetTitle>
             <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
               <img
-                src="/images/design-mode/VITAMEND_LOGO.png"
+                src="/logo.png"
                 alt="VitaMend"
                 className="h-8 w-8 mr-2"
               />

@@ -2,348 +2,77 @@
 
 import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Shell } from "@/components/shell"
-import { Icons } from "@/components/icons"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ArrowRight, Heart, Pill, Users, Award, Package, Clock, CheckCircle, XCircle, RefreshCw } from "lucide-react"
-import { getUserDonations, getActiveDonations, getStats, type Donation } from "@/lib/firestore"
-
-const statusColors = {
-  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-  verified: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  distributed: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-  rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-}
-
-const statusIcons = {
-  pending: Clock,
-  verified: CheckCircle,
-  distributed: Package,
-  rejected: XCircle,
-}
-
-const statColorMap: Record<string, { icon: string; bg: string }> = {
-  emerald: { icon: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
-  blue: { icon: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-900/20" },
-  purple: { icon: "text-purple-600", bg: "bg-purple-50 dark:bg-purple-900/20" },
-  orange: { icon: "text-orange-600", bg: "bg-orange-50 dark:bg-orange-900/20" },
-}
-
-const quickActions = [
-  { href: "/donate", icon: Heart, color: "emerald", title: "Donate Medicines", desc: "Help someone in need" },
-  { href: "/volunteer", icon: Users, color: "blue", title: "Become Volunteer", desc: "Join our team" },
-  { href: "/shop", icon: Pill, color: "purple", title: "Browse Shop", desc: "Support our mission" },
-]
+import { useEffect } from "react"
+import { motion } from "framer-motion"
 
 export default function DashboardPage() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
-  const [myDonations, setMyDonations] = useState<Donation[]>([])
-  const [activeDonations, setActiveDonations] = useState<Donation[]>([])
-  const [stats, setStats] = useState({ totalDonations: 0, medicinesVerified: 0, livesHelped: 0, activeVolunteers: 0 })
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/auth/signin?callbackUrl=/dashboard")
+    if (!loading) {
+      const token = localStorage.getItem("token")
+      if (!token) {
+        router.push("/auth/signin")
+      }
     }
-  }, [authLoading, user, router])
+  }, [loading, router])
 
-  const fetchData = async () => {
-    if (!user) return
-
-    try {
-      const [userDonations, active, statsData] = await Promise.all([
-        getUserDonations(user.uid),
-        getActiveDonations(),
-        getStats(),
-      ])
-
-      setMyDonations(userDonations)
-      setActiveDonations(active)
-      setStats(statsData)
-    } catch (error) {
-      console.error("Failed to fetch dashboard data:", error)
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }
-
-  useEffect(() => {
-    if (user) {
-      fetchData()
-    }
-  }, [user])
-
-  const handleRefresh = () => {
-    setRefreshing(true)
-    fetchData()
-  }
-
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <Shell>
-        <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600"></div>
-          <p className="text-slate-500 dark:text-slate-400 animate-pulse">Loading your dashboard...</p>
-        </div>
-      </Shell>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
     )
   }
 
-  if (!user) {
-    return null
-  }
-
-  const formatDate = (date: Date | string | undefined) => {
-    if (!date) return "N/A"
-    const d = typeof date === "string" ? new Date(date) : date
-    return d.toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    })
-  }
-
-  const statsConfig = [
-    { title: "Total Donations", value: stats.totalDonations, icon: Heart, color: "emerald", suffix: "" },
-    { title: "Medicines Verified", value: stats.medicinesVerified, icon: Pill, color: "blue", suffix: "" },
-    { title: "Lives Helped", value: stats.livesHelped, icon: Users, color: "purple", suffix: "" },
-    { title: "Active Volunteers", value: stats.activeVolunteers, icon: Award, color: "orange", suffix: "" },
-  ]
+  if (!user) return null;
 
   return (
-    <Shell>
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
-            <p className="text-slate-600 dark:text-slate-400">Welcome back, {user.name || "User"}!</p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="transition-smooth hover-scale bg-transparent"
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`} />
-              Refresh
-            </Button>
-            <Button asChild className="bg-emerald-600 hover:bg-emerald-700 transition-smooth hover-lift">
-              <Link href="/donate">
-                <Icons.plus className="h-4 w-4 mr-2" />
-                New Donation
-              </Link>
-            </Button>
-          </div>
+    <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container mx-auto max-w-5xl">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          className="mb-10"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Welcome back, {user?.name}
+          </h1>
+          <p className="text-xl text-gray-500 mt-2">Here is a summary of your Vitamend impact.</p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+          
+          <motion.div 
+            whileHover={{ y: -8 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className="bg-white p-8 rounded-2xl shadow-lg border border-transparent hover:border-blue-100 transition-colors cursor-pointer"
+          >
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">Your Donations</h2>
+            <p className="text-gray-500">Track all your donated medicines and their current verification status.</p>
+          </motion.div>
+
+          <motion.div 
+            whileHover={{ y: -8 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className="bg-white p-8 rounded-2xl shadow-lg border border-transparent hover:border-purple-100 transition-colors cursor-pointer"
+          >
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">Your Requests</h2>
+            <p className="text-gray-500">Check medicine requests and pending fulfillment deliveries.</p>
+          </motion.div>
+
+          <motion.div 
+            whileHover={{ y: -8 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className="bg-white p-8 rounded-2xl shadow-lg border border-transparent hover:border-pink-100 transition-colors cursor-pointer"
+          >
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">Volunteer Status</h2>
+            <p className="text-gray-500">See approval updates and nearby active medical delivery zones.</p>
+          </motion.div>
+
         </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {quickActions.map((action, idx) => (
-            <Button
-              key={action.href}
-              asChild
-              variant="outline"
-              className="h-auto p-6 flex flex-col items-start justify-start dark:border-slate-700 dark:hover:bg-slate-800 bg-transparent transition-smooth hover-lift animate-fade-in-up"
-              style={{ animationDelay: `${(idx + 1) * 100}ms` }}
-            >
-              <Link href={action.href}>
-                <action.icon className={`h-6 w-6 mb-2 ${statColorMap[action.color]?.icon || "text-emerald-600"}`} />
-                <span className="font-semibold text-left">{action.title}</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">{action.desc}</span>
-              </Link>
-            </Button>
-          ))}
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {statsConfig.map((stat, idx) => (
-            <Card
-              key={stat.title}
-              className="dark:border-slate-800 dark:bg-slate-900 transition-smooth hover-lift animate-fade-in-up"
-              style={{ animationDelay: `${(idx + 4) * 100}ms` }}
-            >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">{stat.title}</CardTitle>
-                <stat.icon className={`h-4 w-4 ${statColorMap[stat.color]?.icon || "text-emerald-600"}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl sm:text-2xl font-bold">
-                  {stat.value}
-                  {stat.suffix}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Tabs Section */}
-        <Tabs defaultValue="my-donations" className="space-y-6 animate-fade-in-up" style={{ animationDelay: "500ms" }}>
-          <TabsList className="dark:bg-slate-900 dark:border-slate-800 grid w-full grid-cols-3">
-            <TabsTrigger value="my-donations" className="transition-smooth">
-              My Donations
-            </TabsTrigger>
-            <TabsTrigger value="active-donations" className="transition-smooth">
-              Active Donations
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="transition-smooth">
-              Settings
-            </TabsTrigger>
-          </TabsList>
-
-          {/* My Donations Tab */}
-          <TabsContent value="my-donations" className="space-y-6">
-            <Card className="dark:border-slate-800 dark:bg-slate-900">
-              <CardHeader>
-                <CardTitle>Your Donations</CardTitle>
-                <CardDescription>All medicines you have donated to the platform</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {myDonations.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Heart className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                    <p className="text-slate-600 dark:text-slate-400 mb-4">You haven&apos;t made any donations yet.</p>
-                    <Button asChild className="bg-emerald-600 hover:bg-emerald-700 transition-smooth hover-lift">
-                      <Link href="/donate">
-                        Make Your First Donation
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Medicine</TableHead>
-                          <TableHead className="hidden sm:table-cell">Quantity</TableHead>
-                          <TableHead className="hidden md:table-cell">Donated On</TableHead>
-                          <TableHead className="hidden md:table-cell">Expiry</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {myDonations.map((donation) => {
-                          const StatusIcon = statusIcons[donation.status]
-                          return (
-                            <TableRow
-                              key={donation.id}
-                              className="transition-smooth hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                            >
-                              <TableCell className="font-medium">{donation.medicineName}</TableCell>
-                              <TableCell className="hidden sm:table-cell">{donation.quantity}</TableCell>
-                              <TableCell className="hidden md:table-cell">{formatDate(donation.createdAt)}</TableCell>
-                              <TableCell className="hidden md:table-cell">{formatDate(donation.expiryDate)}</TableCell>
-                              <TableCell>
-                                <Badge className={`${statusColors[donation.status]} flex items-center gap-1 w-fit`}>
-                                  <StatusIcon className="h-3 w-3" />
-                                  {donation.status}
-                                </Badge>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Active Donations Tab */}
-          <TabsContent value="active-donations" className="space-y-6">
-            <Card className="dark:border-slate-800 dark:bg-slate-900">
-              <CardHeader>
-                <CardTitle>All Active Donations</CardTitle>
-                <CardDescription>Currently available medicines on the platform</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {activeDonations.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Package className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                    <p className="text-slate-600 dark:text-slate-400">
-                      No active donations on the platform yet. Be the first to donate!
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {activeDonations.map((donation, idx) => {
-                      const StatusIcon = statusIcons[donation.status]
-                      return (
-                        <Card
-                          key={donation.id}
-                          className="dark:border-slate-700 transition-smooth hover-lift animate-fade-in-up"
-                          style={{ animationDelay: `${idx * 50}ms` }}
-                        >
-                          <CardHeader className="pb-2">
-                            <div className="flex items-start justify-between">
-                              <CardTitle className="text-base">{donation.medicineName}</CardTitle>
-                              <Badge className={`${statusColors[donation.status]} flex items-center gap-1`}>
-                                <StatusIcon className="h-3 w-3" />
-                                {donation.status}
-                              </Badge>
-                            </div>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="grid grid-cols-2 gap-2 text-sm">
-                              <div>
-                                <span className="text-slate-500 dark:text-slate-400">Quantity:</span>
-                                <p className="font-medium">{donation.quantity} units</p>
-                              </div>
-                              <div>
-                                <span className="text-slate-500 dark:text-slate-400">Expires:</span>
-                                <p className="font-medium">{formatDate(donation.expiryDate)}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-6">
-            <Card className="dark:border-slate-800 dark:bg-slate-900">
-              <CardHeader>
-                <CardTitle>Account Settings</CardTitle>
-                <CardDescription>Manage your account preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-white">Email</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{user.email}</p>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-white">Name</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{user.name}</p>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-white">Role</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 capitalize">{user.role}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </div>
-    </Shell>
+    </div>
   )
 }

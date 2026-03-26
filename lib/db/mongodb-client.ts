@@ -1,23 +1,30 @@
-// MongoDB Client - Server-side only
-import { MongoClient, type Db, ObjectId } from "mongodb"
-import { DB_CONFIG } from "./config"
+import { MongoClient } from "mongodb";
 
-let cachedClient: MongoClient | null = null
-let cachedDb: Db | null = null
+const uri = process.env.MONGODB_URI;
 
-export async function getDb(): Promise<Db> {
-  if (cachedDb) return cachedDb
-
-  if (!cachedClient) {
-    cachedClient = new MongoClient(DB_CONFIG.MONGODB_URI)
-    await cachedClient.connect()
-  }
-
-  cachedDb = cachedClient.db(DB_CONFIG.DB_NAME)
-  return cachedDb
+if (!uri) {
+  throw new Error("MONGODB_URI not found in .env.local");
 }
 
-// ✅ Alias for backward compatibility with API routes
-export const getMongoDb = getDb
+let client: MongoClient;
+let clientPromise: Promise<MongoClient>;
 
-export { ObjectId }
+declare global {
+  var _mongoClientPromise: Promise<MongoClient>;
+}
+
+if (process.env.NODE_ENV === "development") {
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri);
+    global._mongoClientPromise = client.connect();
+  }
+  clientPromise = global._mongoClientPromise;
+} else {
+  client = new MongoClient(uri);
+  clientPromise = client.connect();
+}
+
+export async function getMongoDb() {
+  const client = await clientPromise;
+  return client.db("vitamend");
+}

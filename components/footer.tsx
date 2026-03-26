@@ -4,10 +4,10 @@ import Image from "next/image"
 import { Heart, Mail, Phone, MapPin } from "lucide-react"
 
 const CONTACT = {
-  email: "vitamend.org@gmail.com",
+  email: process.env.NEXT_PUBLIC_OFFICIAL_EMAIL || "vitamend.org@gmail.com",
   phone: "+91 9929243215",
   whatsapp: "https://wa.me/919929243215",
-  emailLink: "mailto:vitamend.org@gmail.com",
+  emailLink: `mailto:${process.env.NEXT_PUBLIC_OFFICIAL_EMAIL || "vitamend.org@gmail.com"}`,
 }
 
 export default function Footer() {
@@ -41,7 +41,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Image
-                src="/images/design-mode/VITAMEND_LOGO.png"
+                src="/logo.png"
                 alt="VitaMend logo"
                 width={32}
                 height={32}
@@ -125,16 +125,21 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500">© {currentYear} VitaMend. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            {footerLinks.legal.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-xs text-slate-500 hover:text-slate-300 transition-colors duration-200"
-              >
-                {link.name}
-              </Link>
-            ))}
+          <div className="flex flex-col items-center sm:items-end gap-2">
+            <p className="text-xs text-slate-500">
+              Contact us: {process.env.NEXT_PUBLIC_OFFICIAL_EMAIL || "vitamend.org@gmail.com"}
+            </p>
+            <div className="flex items-center gap-6">
+              {footerLinks.legal.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-xs text-slate-500 hover:text-slate-300 transition-colors duration-200"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

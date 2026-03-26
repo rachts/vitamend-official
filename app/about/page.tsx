@@ -16,7 +16,7 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <Image
-            src="/images/design-mode/VITAMEND_LOGO.png"
+            src="/logo.png"
             alt="VitaMend logo"
             width={80}
             height={80}

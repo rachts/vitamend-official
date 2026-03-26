@@ -62,11 +62,39 @@ export default function DonationForm() {
     }
   }
 
+  const preprocessImage = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(URL.createObjectURL(file));
+            return;
+          }
+
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          // Apply contrast and brightness filters
+          ctx.filter = "contrast(200%) brightness(150%)";
+          ctx.drawImage(img, 0, 0);
+
+          resolve(canvas.toDataURL("image/jpeg", 0.9));
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   const processImageWithOCR = async (file: File) => {
     setIsProcessingOCR(true)
 
     try {
-      const imageUrl = URL.createObjectURL(file)
+      const imageUrl = await preprocessImage(file);
 
       toast({
         title: "AI Processing Image",
@@ -100,8 +128,6 @@ export default function DonationForm() {
           variant: "destructive",
         })
       }
-
-      URL.revokeObjectURL(imageUrl)
     } catch (error) {
       console.error("OCR error:", error)
       toast({

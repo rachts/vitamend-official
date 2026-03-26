@@ -10,7 +10,7 @@ export default function TermsOfService() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-[#1a472a] mb-4">1. Acceptance of Terms</h2>
             <p className="text-[#2d3748] mb-4">
-              By accessing and using VitaMend ("the Platform"), you accept and agree to be bound by the terms and
+              By accessing and using VitaMend (&quot;the Platform&quot;), you accept and agree to be bound by the terms and
               provision of this agreement. If you do not agree to abide by the above, please do not use this service.
             </p>
           </section>

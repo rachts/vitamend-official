@@ -27,7 +27,7 @@ export default function ContactPage() {
           {/* Header */}
           <div className="text-center mb-12">
             <Image
-              src="/images/design-mode/VITAMEND_LOGO.png"
+              src="/logo.png"
               alt="VitaMend logo"
               width={64}
               height={64}

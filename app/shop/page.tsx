@@ -27,25 +27,7 @@ const priceRanges = [
   { value: "100+", label: "$100+", range: [100, 1000] as [number, number] },
 ]
 
-const ngoPartners = [
-  {
-    name: "Partner NGOs Coming Soon",
-    logo: "/ngo.jpg",
-    description: "We are onboarding verified NGO partners",
-    impact: "Join us",
-    focus: "Healthcare access",
-  },
-]
 
-const pharmacyPartners = [
-  {
-    name: "Pharmacy Partners Coming Soon",
-    logo: "/pharmacy-interior.png",
-    locations: "Coming soon",
-    services: "Medicine distribution",
-    specialty: "Community healthcare",
-  },
-]
 
 export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState("")
