@@ -300,7 +300,7 @@ export default function VolunteerForm() {
                   {...register("canLift")}
                   onCheckedChange={(checked) => setValue("canLift", checked as boolean)}
                 />
-                <Label htmlFor="canLift">I can lift packages up to 25 lbs</Label>
+                <Label htmlFor="canLift">I can lift packages up to 5 kgs</Label>
               </div>
             </div>
 

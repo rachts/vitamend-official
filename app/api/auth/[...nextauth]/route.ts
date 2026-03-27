@@ -15,7 +15,8 @@ const authOptions: NextAuthOptions = {
         }
 
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005"}/api/auth/login`, {
+          const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5005');
+          const res = await fetch(`${API_URL}/api/auth/login`, {
             method: "POST",
             body: JSON.stringify(credentials),
             headers: { "Content-Type": "application/json" },

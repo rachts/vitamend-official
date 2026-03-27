@@ -19,7 +19,8 @@ export default function MedicinesPage() {
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005"}/api/medicines`);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5005');
+        const res = await fetch(`${API_URL}/api/medicines`);
         const json = await res.json();
         if (json.success && json.data) {
           setMedicines(json.data);

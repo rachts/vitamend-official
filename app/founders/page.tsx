@@ -17,7 +17,7 @@ const founders = [
   {
     name: "Nandini Dubey",
     role: "Co-Founder",
-    image: "/images/nandini-dubey.jpg",
+    image: "/images/nandini.jpeg",
     linkedin: "https://www.linkedin.com/in/nandini-dubey-75a67a322/",
   },
 ] as const

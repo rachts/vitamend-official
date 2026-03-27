@@ -107,10 +107,11 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchStats() {
       try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5005');
         const [medicinesRes, usersRes, volunteersRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005"}/api/medicines`).catch(() => null),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005"}/api/auth/users`).catch(() => null),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005"}/api/volunteers`).catch(() => null),
+          fetch(`${API_URL}/api/medicines`).catch(() => null),
+          fetch(`${API_URL}/api/auth/users`).catch(() => null),
+          fetch(`${API_URL}/api/volunteers`).catch(() => null),
         ]);
 
         const medicinesData = medicinesRes?.ok ? await medicinesRes.json() : [];
