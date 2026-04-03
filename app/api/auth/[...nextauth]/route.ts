@@ -1,5 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import connectMongoose from "@/lib/db/mongoose";
+import User from "@/backend/models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,25 +17,20 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          // If NEXT_PUBLIC_API_URL is missing, call itself relative path
-          const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
-          const res = await fetch(`${API_URL}/api/auth/login`, {
-            method: "POST",
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" },
-          });
-          
-          const result = await res.json();
-          
-          if (res.ok && result.success && result.data) {
+          await connectMongoose();
+          const user = await User.findOne({ email: credentials.email });
+
+          if (user && (await (user as any).matchPassword(credentials.password))) {
             return {
-              id: result.data._id,
-              ...result.data,
+              id: user._id.toString(),
+              name: user.name,
+              email: user.email,
+              role: user.role,
             };
           }
           return null;
         } catch (error) {
-          console.error("NextAuth fetch error:", error);
+          console.error("NextAuth authorize error:", error);
           return null;
         }
       },
