@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import "server-only";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -17,7 +18,7 @@ if (!cached) {
   cached = (global as any).mongoose = { conn: null, promise: null };
 }
 
-async function connectDB() {
+async function connectMongoose() {
   if (cached.conn) {
     return cached.conn;
   }
@@ -43,4 +44,4 @@ async function connectDB() {
   return cached.conn;
 }
 
-export default connectDB;
+export default connectMongoose;

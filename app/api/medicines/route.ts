@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/lib/db";
+import connectMongoose from "@/lib/db/mongoose";
 import Medicine from "@/backend/models/Medicine";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function GET() {
   try {
-    await connectDB();
+    await connectMongoose();
     const medicines = await Medicine.find({ status: "approved" }).populate("donor", "name email");
     return NextResponse.json({ success: true, message: "Medicines fetched", data: medicines });
   } catch (error: any) {
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Not authorized" }, { status: 401 });
     }
 
-    await connectDB();
+    await connectMongoose();
     const body = await req.json();
     
     // In backend/models/User.js, the user might have an id or _id

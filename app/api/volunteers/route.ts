@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/lib/db";
+import connectMongoose from "@/lib/db/mongoose";
 import Volunteer from "@/backend/models/Volunteer";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions);
     const body = await req.json();
     
-    await connectDB();
+    await connectMongoose();
     
     // Logic from volunteerController.js
     const { email } = body;
@@ -41,7 +41,7 @@ export async function GET() {
       return NextResponse.json({ success: false, message: "Not authorized" }, { status: 401 });
     }
 
-    await connectDB();
+    await connectMongoose();
     const volunteers = await Volunteer.find({}).populate('user', 'name email phone');
     return NextResponse.json({ success: true, message: 'Volunteers fetched', data: volunteers });
   } catch (error: any) {

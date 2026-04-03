@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Footer from "@/components/footer"
-import { getDb, type Medicine } from "@/lib/db"
+// Removed direct getDb import to fix Vercel build error
+import type { Medicine } from "@/lib/db/types"
 
 export default function StorePage() {
   const [medicines, setMedicines] = useState<Medicine[]>([])
@@ -21,18 +22,20 @@ export default function StorePage() {
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
-        const db = await getDb()
-        const medicinesData = await db.getMedicines()
-        setMedicines(medicinesData)
-        setDbSetupNeeded(false)
+        const res = await fetch("/api/medicines")
+        const result = await res.json()
+        if (result.success) {
+          setMedicines(result.data)
+          setDbSetupNeeded(false)
+        } else {
+          throw new Error(result.message)
+        }
       } catch (error: any) {
         const errorMsg = error?.message || ""
         if (errorMsg.includes("schema cache") || errorMsg.includes("relation") || errorMsg.includes("does not exist")) {
           setDbSetupNeeded(true)
         }
-        if (!errorMsg.includes("schema cache")) {
-          console.error("Error fetching medicines:", error)
-        }
+        console.error("Error fetching medicines:", error)
       } finally {
         setLoading(false)
       }

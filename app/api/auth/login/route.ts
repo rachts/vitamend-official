@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/lib/db";
+import connectMongoose from "@/lib/db/mongoose";
 import User from "@/backend/models/User";
 import jwt from "jsonwebtoken";
 
@@ -11,7 +11,7 @@ const generateToken = (id: string) => {
 
 export async function POST(req: NextRequest) {
   try {
-    await connectDB();
+    await connectMongoose();
     const { email, password } = await req.json();
 
     const user = await User.findOne({ email });

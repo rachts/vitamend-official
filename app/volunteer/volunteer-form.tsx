@@ -14,7 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
-import { getDb, type DatabaseAdapter } from "@/lib/db"
+// Removed direct getDb import to fix Vercel build error
+// Database interactions now happen through API routes
 
 const volunteerSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -49,10 +50,9 @@ const availabilityOptions = [
 export default function VolunteerForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedAvailability, setSelectedAvailability] = useState<string[]>([])
-  const [db, setDb] = useState<DatabaseAdapter | null>(null)
 
   useEffect(() => {
-    getDb().then(setDb)
+    // DB no longer needed on client
   }, [])
 
   const {
@@ -85,32 +85,28 @@ export default function VolunteerForm() {
     setIsSubmitting(true)
 
     try {
-      if (!db) {
-        toast.error("Database not initialized", {
-          description: "Please try again.",
-        })
-        setIsSubmitting(false)
-        return
-      }
-
-      const result = await db.submitVolunteer({
-        fullName: data.fullName,
-        email: data.email,
-        phone: data.phone,
-        address: data.address,
-        dateOfBirth: data.dateOfBirth,
-        occupation: data.occupation,
-        experience: data.experience,
-        availability: data.availability.join(", "),
-        role: data.role,
-        motivation: data.motivation,
-        emergencyContact: data.emergencyContact,
-        emergencyPhone: data.emergencyPhone,
-        hasTransport: data.hasTransport,
-        canLift: data.canLift,
-        medicalConditions: data.medicalConditions,
-        references: data.references,
-      })
+      const result = await fetch("/api/volunteers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          dateOfBirth: data.dateOfBirth,
+          occupation: data.occupation,
+          experience: data.experience,
+          availability: data.availability.join(", "),
+          role: data.role,
+          motivation: data.motivation,
+          emergencyContact: data.emergencyContact,
+          emergencyPhone: data.emergencyPhone,
+          hasTransport: data.hasTransport,
+          canLift: data.canLift,
+          medicalConditions: data.medicalConditions,
+          references: data.references,
+        }),
+      }).then(res => res.json())
 
       if (result.success) {
         toast.success("Application submitted successfully!", {
