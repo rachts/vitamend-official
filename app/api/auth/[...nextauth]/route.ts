@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -15,17 +15,21 @@ const authOptions: NextAuthOptions = {
         }
 
         try {
-          const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5005');
+          // If NEXT_PUBLIC_API_URL is missing, call itself relative path
+          const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
           const res = await fetch(`${API_URL}/api/auth/login`, {
             method: "POST",
             body: JSON.stringify(credentials),
             headers: { "Content-Type": "application/json" },
           });
           
-          const user = await res.json();
+          const result = await res.json();
           
-          if (res.ok && user) {
-            return user;
+          if (res.ok && result.success && result.data) {
+            return {
+              id: result.data._id,
+              ...result.data,
+            };
           }
           return null;
         } catch (error) {
@@ -35,6 +39,22 @@ const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = (user as any).role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
+      }
+      return session;
+    }
+  },
   pages: {
     signIn: "/auth/signin",
   },
