@@ -11,7 +11,7 @@ const founders = [
   {
     name: "Rachit Kumar Tiwari",
     role: "Founder & Developer",
-    image: "/images/rachit.jpg",
+    image: "/images/rachit1.jpg",
     linkedin: "https://www.linkedin.com/in/rachitkrtiwari/",
   },
   {
