@@ -1,0 +1,68 @@
+.next/types/app/api/auth/[...nextauth]/route.ts(12,13): error TS2344: Type 'OmitWithTag<typeof import("/Volumes/Rachit SSD/vitamend/app/api/auth/[...nextauth]/route"), "OPTIONS" | "POST" | "GET" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "config" | "generateStaticParams" | ... 6 more ... | "maxDuration", "">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'authOptions' is incompatible with index signature.
+    Type 'AuthOptions' is not assignable to type 'never'.
+__tests__/components/DonationForm.test.tsx(1,52): error TS2307: Cannot find module '../utils/test-utils' or its corresponding type declarations.
+__tests__/components/DonationForm.test.tsx(5,16): error TS2304: Cannot find name 'jest'.
+__tests__/components/DonationForm.test.tsx(7,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+__tests__/components/DonationForm.test.tsx(8,3): error TS2304: Cannot find name 'beforeEach'.
+__tests__/components/DonationForm.test.tsx(9,16): error TS2503: Cannot find namespace 'jest'.
+__tests__/components/DonationForm.test.tsx(12,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+__tests__/components/DonationForm.test.tsx(15,5): error TS2304: Cannot find name 'expect'.
+__tests__/components/DonationForm.test.tsx(16,5): error TS2304: Cannot find name 'expect'.
+__tests__/components/DonationForm.test.tsx(17,5): error TS2304: Cannot find name 'expect'.
+__tests__/components/DonationForm.test.tsx(18,5): error TS2304: Cannot find name 'expect'.
+__tests__/components/DonationForm.test.tsx(21,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+__tests__/components/DonationForm.test.tsx(22,16): error TS2503: Cannot find namespace 'jest'.
+__tests__/components/DonationForm.test.tsx(42,7): error TS2304: Cannot find name 'expect'.
+__tests__/components/DonationForm.test.tsx(42,57): error TS2304: Cannot find name 'expect'.
+__tests__/components/DonationForm.test.tsx(46,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+__tests__/components/DonationForm.test.tsx(47,16): error TS2503: Cannot find namespace 'jest'.
+__tests__/components/DonationForm.test.tsx(67,7): error TS2304: Cannot find name 'expect'.
+app/auth/callback/route.ts(21,18): error TS7006: Parameter 'cookiesToSet' implicitly has an 'any' type.
+app/auth/callback/route.ts(23,39): error TS7031: Binding element 'name' implicitly has an 'any' type.
+app/auth/callback/route.ts(23,45): error TS7031: Binding element 'value' implicitly has an 'any' type.
+app/auth/callback/route.ts(23,52): error TS7031: Binding element 'options' implicitly has an 'any' type.
+app/profile/page.tsx(67,34): error TS2339: Property 'displayName' does not exist on type 'AuthUser'.
+app/profile/page.tsx(80,27): error TS2339: Property 'metadata' does not exist on type 'AuthUser'.
+app/profile/page.tsx(81,39): error TS2339: Property 'metadata' does not exist on type 'AuthUser'.
+app/settings/page.tsx(15,26): error TS2339: Property 'logout' does not exist on type 'AuthContextType'.
+app/settings/page.tsx(57,55): error TS2339: Property 'displayName' does not exist on type 'AuthUser'.
+components/mobile-nav.tsx(23,11): error TS2339: Property 'totalItems' does not exist on type 'CartContextType'.
+lib/fda-recall-service.ts(64,27): error TS2802: Type 'RegExpStringIterator<RegExpExecArray>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
+lib/hooks/useNotifications.ts(4,25): error TS2307: Cannot find module './useAuth' or its corresponding type declarations.
+lib/offline-storage.ts(49,26): error TS2339: Property 'sync' does not exist on type 'ServiceWorkerRegistration'.
+lib/offline-storage.ts(49,64): error TS7006: Parameter 'err' implicitly has an 'any' type.
+lib/offline-storage.ts(81,26): error TS2339: Property 'sync' does not exist on type 'ServiceWorkerRegistration'.
+lib/offline-storage.ts(81,65): error TS7006: Parameter 'err' implicitly has an 'any' type.
+lib/recall-monitor.ts(2,37): error TS2307: Cannot find module './notification-service' or its corresponding type declarations.
+lib/recall-monitor.ts(3,23): error TS2307: Cannot find module './dbConnect' or its corresponding type declarations.
+lib/recall-monitor.ts(4,22): error TS2307: Cannot find module '@/models/Donation' or its corresponding type declarations.
+lib/recall-monitor.ts(47,44): error TS7006: Parameter 'd' implicitly has an 'any' type.
+lib/report-generator.ts(1,23): error TS2307: Cannot find module './dbConnect' or its corresponding type declarations.
+lib/report-generator.ts(2,22): error TS2307: Cannot find module '@/models/Donation' or its corresponding type declarations.
+lib/report-generator.ts(3,18): error TS2307: Cannot find module '@/models/User' or its corresponding type declarations.
+lib/report-generator.ts(55,46): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+lib/report-generator.ts(55,51): error TS7006: Parameter 'donation' implicitly has an 'any' type.
+lib/report-generator.ts(59,50): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+lib/report-generator.ts(59,55): error TS7006: Parameter 'donation' implicitly has an 'any' type.
+lib/report-generator.ts(77,33): error TS7006: Parameter 'donation' implicitly has an 'any' type.
+lib/report-generator.ts(80,44): error TS7006: Parameter 'med' implicitly has an 'any' type.
+lib/report-generator.ts(139,32): error TS7006: Parameter 'u' implicitly has an 'any' type.
+lib/report-generator.ts(146,46): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+lib/report-generator.ts(146,51): error TS7006: Parameter 'd' implicitly has an 'any' type.
+lib/supabase/server.ts(12,14): error TS7006: Parameter 'cookiesToSet' implicitly has an 'any' type.
+lib/supabase/server.ts(14,35): error TS7031: Binding element 'name' implicitly has an 'any' type.
+lib/supabase/server.ts(14,41): error TS7031: Binding element 'value' implicitly has an 'any' type.
+lib/supabase/server.ts(14,48): error TS7031: Binding element 'options' implicitly has an 'any' type.
+lib/supabase/volunteers.ts(2,74): error TS2724: '"@/lib/db"' has no exported member named 'VolunteerData'. Did you mean 'Volunteer'?
+lib/sustainability-metrics.ts(1,23): error TS2307: Cannot find module './dbConnect' or its corresponding type declarations.
+lib/sustainability-metrics.ts(2,22): error TS2307: Cannot find module '@/models/Donation' or its corresponding type declarations.
+lib/sustainability-metrics.ts(3,18): error TS2307: Cannot find module '@/models/User' or its corresponding type declarations.
+lib/sustainability-metrics.ts(40,46): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+lib/sustainability-metrics.ts(40,51): error TS7006: Parameter 'donation' implicitly has an 'any' type.
+lib/sustainability-metrics.ts(41,47): error TS7006: Parameter 'medSum' implicitly has an 'any' type.
+lib/sustainability-metrics.ts(41,55): error TS7006: Parameter 'med' implicitly has an 'any' type.
+lib/sustainability-metrics.ts(66,46): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+lib/sustainability-metrics.ts(66,51): error TS7006: Parameter 'donation' implicitly has an 'any' type.
+lib/sustainability-metrics.ts(67,47): error TS7006: Parameter 'medSum' implicitly has an 'any' type.
+lib/sustainability-metrics.ts(67,55): error TS7006: Parameter 'med' implicitly has an 'any' type.

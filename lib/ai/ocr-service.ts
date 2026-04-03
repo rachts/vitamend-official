@@ -29,8 +29,9 @@ export class OCRService {
     if (!this.worker) {
       this.worker = await Tesseract.createWorker("eng")
       await this.worker.setParameters({
-        tessedit_char_whitelist: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/-: ",
+        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-/:.",
       })
+      console.log("OCR Worker initialized with optimized parameters")
     }
     return this.worker
   }
@@ -120,7 +121,7 @@ export class OCRService {
       const names = new Set<string>()
 
       for (const pattern of patterns) {
-        const matches = text.matchAll(pattern)
+        const matches = Array.from(text.matchAll(pattern))
         for (const match of matches) {
           const name = match[1].trim()
           if (name.length > 2) {

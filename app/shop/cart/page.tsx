@@ -21,7 +21,7 @@ export default function CartPage() {
     setIsUpdating(productId)
     try {
       await updateQuantity(productId, newQuantity)
-    } catch (error) {
+    } catch {
       toast.error("Failed to update quantity")
     } finally {
       setIsUpdating(null)
@@ -32,7 +32,7 @@ export default function CartPage() {
     try {
       await removeFromCart(productId)
       toast.success("Item removed from cart")
-    } catch (error) {
+    } catch {
       toast.error("Failed to remove item")
     }
   }
@@ -41,7 +41,7 @@ export default function CartPage() {
     try {
       await clearCart()
       toast.success("Cart cleared")
-    } catch (error) {
+    } catch {
       toast.error("Failed to clear cart")
     }
   }
@@ -57,7 +57,7 @@ export default function CartPage() {
         <div className="max-w-2xl mx-auto text-center">
           <ShoppingBag className="mx-auto h-24 w-24 text-gray-400 mb-6" />
           <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-8">Looks like you haven't added any medicines to your cart yet.</p>
+          <p className="text-gray-600 mb-8">Looks like you haven&apos;t added any medicines to your cart yet.</p>
           <Link href="/shop">
             <Button size="lg">
               <ArrowLeft className="mr-2 h-4 w-4" />

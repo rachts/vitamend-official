@@ -1,5 +1,5 @@
 import { createClient } from "./client"
-import { getDb, type VolunteerInput, type Volunteer, type DbResult, type VolunteerData } from "@/lib/db"
+import { getDb, type VolunteerInput, type Volunteer, type DbResult } from "@/lib/db"
 
 export type { VolunteerInput as VolunteerData }
 
@@ -18,7 +18,7 @@ export async function getVolunteers(): Promise<Volunteer[]> {
  * @deprecated Use submitVolunteerApplication from "@/lib/db" instead
  */
 export async function _submitVolunteerApplication(
-  data: VolunteerData,
+  data: VolunteerInput,
 ): Promise<{ success: boolean; message: string; id?: string }> {
   const supabase = createClient()
 

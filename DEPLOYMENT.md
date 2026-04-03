@@ -107,7 +107,7 @@ If you want to deploy the FastAPI OCR service:
    ```
 
 2. **Deploy**
-   - Deploy to your preferred platform (Railway, Render, etc.)
+   - Deploy to your preferred platform (Vercel, Render, etc.)
    - Add `MONGO_URI` environment variable
    - Note the service URL
 

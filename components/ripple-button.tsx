@@ -3,6 +3,7 @@
 import type React from "react"
 import { type ButtonHTMLAttributes, forwardRef, useRef, useCallback, memo } from "react"
 import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 interface RippleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline"
@@ -48,29 +49,32 @@ export const RippleButton = memo(
       )
 
       const variants = {
-        primary: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-emerald-500/25",
+        primary: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg hover:shadow-emerald-500/30",
         secondary:
-          "bg-slate-100 hover:bg-slate-200 text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white",
-        outline: "border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950",
+          "bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-900 dark:from-slate-800 dark:to-slate-900 dark:hover:from-slate-700 dark:hover:to-slate-800 dark:text-white shadow-md",
+        outline: "border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 shadow-sm",
       }
 
       return (
-        <button
-          ref={(node) => {
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          ref={(node: HTMLButtonElement | null) => {
             ;(buttonRef as React.MutableRefObject<HTMLButtonElement | null>).current = node
             if (typeof ref === "function") ref(node)
             else if (ref) ref.current = node
           }}
           className={cn(
-            "relative overflow-hidden px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2",
+            "relative overflow-hidden px-8 py-4 rounded-2xl font-bold transition-shadow duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
             variants[variant],
             className,
           )}
           onClick={handleClick}
-          {...props}
+          {...(props as any)}
         >
           {children}
-        </button>
+        </motion.button>
       )
     },
   ),

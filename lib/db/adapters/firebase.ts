@@ -141,7 +141,7 @@ export const firebaseAdapter: DatabaseAdapter = {
         ...docSnap.data(),
         created_at: docSnap.data().created_at?.toDate?.()?.toISOString() || new Date().toISOString(),
       } as Donation
-    } catch (error) {
+    } catch {
       return null
     }
   },
@@ -189,7 +189,7 @@ export const firebaseAdapter: DatabaseAdapter = {
         ...docSnap.data(),
         created_at: docSnap.data().created_at?.toDate?.()?.toISOString() || new Date().toISOString(),
       } as Medicine
-    } catch (error) {
+    } catch {
       return null
     }
   },
@@ -263,7 +263,7 @@ export const firebaseAdapter: DatabaseAdapter = {
         ...docSnap.data(),
         created_at: docSnap.data().created_at?.toDate?.()?.toISOString() || new Date().toISOString(),
       } as Profile
-    } catch (error) {
+    } catch {
       return null
     }
   },

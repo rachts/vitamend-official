@@ -2,7 +2,7 @@ import crypto from "crypto"
 import { authenticator } from "otplib"
 
 export class TwoFactorAuth {
-  static generateSecret(email: string): string {
+  static generateSecret(_email: string): string {
     return authenticator.generateSecret()
   }
 

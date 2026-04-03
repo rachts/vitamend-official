@@ -7,24 +7,18 @@ import { useEffect, useState } from "react"
 import { Menu, X } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
+import { useAuth } from "@/context/AuthContext"
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
+  const { user, signOut } = useAuth()
 
   const navItems = ["Donate", "Volunteer", "Store", "Transparency", "Founders"]
 
   useEffect(() => {
     setMounted(true)
-
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   const isActive = (item: string) => {
@@ -52,18 +46,12 @@ export default function Navigation() {
   }
 
   return (
-    <header
-      className={`w-full sticky top-0 z-50 h-16 transition-all duration-500 ease-out ${
-        scrolled
-          ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50"
-          : "bg-white dark:bg-slate-900"
-      } border-b border-gray-200/50 dark:border-slate-800/50`}
-    >
+    <header className="fixed top-0 z-50 w-full backdrop-blur-md bg-white/30 dark:bg-slate-900/40 border-b border-gray-200/50 dark:border-slate-800/50 transition-all duration-500 shadow-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <motion.div initial={mounted ? "hidden" : false} animate="visible" variants={logoVariants}>
           <Link href="/" className="flex items-center gap-2 group" aria-label="VitaMend Home">
             <Image
-              src="/images/design-mode/VITAMEND_LOGO.png"
+              src="/logo.png"
               alt="VitaMend logo"
               width={32}
               height={32}
@@ -90,13 +78,13 @@ export default function Navigation() {
                 href={`/${item.toLowerCase()}`}
                 className={`relative text-sm font-medium transition-all duration-300 ease-out link-underline ${
                   isActive(item)
-                    ? "text-emerald-600 dark:text-emerald-400"
+                    ? "text-blue-600 dark:text-blue-400"
                     : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 {item}
                 {isActive(item) && (
-                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-emerald-600 dark:bg-emerald-400 rounded-full" />
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full" />
                 )}
               </Link>
             </motion.div>
@@ -111,16 +99,33 @@ export default function Navigation() {
           variants={actionsVariants}
         >
           <ThemeToggle />
-          <Link
-            href="/dashboard"
-            className={`hidden sm:block rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 ease-out transform hover:scale-[1.02] active:scale-[0.98] ${
-              pathname === "/dashboard"
-                ? "bg-emerald-700 shadow-lg shadow-emerald-500/30"
-                : "bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/25"
-            }`}
-          >
-            Dashboard
-          </Link>
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                className={`hidden sm:block rounded-xl px-5 py-2.5 text-sm font-bold text-white transition-all duration-300 shadow-md ${
+                  pathname === "/dashboard"
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={signOut}
+                className="hidden sm:block rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all duration-300"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/auth/signin"
+              className="hidden sm:block rounded-xl px-5 py-2.5 text-sm font-bold text-white transition-all duration-300 shadow-lg shadow-blue-500/25 bg-blue-600 hover:bg-blue-700"
+            >
+              Login
+            </Link>
+          )}
 
           {/* Mobile menu button */}
           <button
@@ -151,13 +156,13 @@ export default function Navigation() {
           className="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-4 px-4 space-y-1"
           aria-label="Mobile navigation"
         >
-          {[...navItems, "Dashboard"].map((item, idx) => (
+          {navItems.map((item, idx) => (
             <Link
               key={item}
               href={`/${item.toLowerCase()}`}
-              className={`block py-3 px-3 rounded-lg font-medium transition-all duration-200 ease-out ${
+              className={`block py-3 px-4 rounded-xl font-bold transition-all duration-200 ease-out ${
                 isActive(item)
-                  ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
+                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                   : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
               }`}
               onClick={() => setMobileMenuOpen(false)}
@@ -166,6 +171,15 @@ export default function Navigation() {
               {item}
             </Link>
           ))}
+
+          {user ? (
+            <>
+              <Link href="/dashboard" className="block py-3 px-4 rounded-xl font-bold transition-all text-blue-600 bg-blue-50 dark:bg-slate-800 mt-4" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+              <button onClick={() => { signOut(); setMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 mt-2 rounded-xl font-bold transition-all text-red-600 hover:bg-red-50 dark:hover:bg-slate-800">Logout</button>
+            </>
+          ) : (
+             <Link href="/auth/signin" className="block w-full py-4 text-center mt-4 rounded-xl font-bold transition-all text-white bg-blue-600 shadow-lg" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+          )}
         </nav>
       </motion.div>
     </header>

@@ -25,7 +25,7 @@ Vitamend connects medicine donors with people in need via verified NGO partners.
 - **Backend**: Next.js API Routes, MongoDB
 - **Authentication**: NextAuth.js
 - **AI/ML**: Custom OCR and verification service (FastAPI)
-- **Deployment**: Vercel, Railway, MongoDB
+- **Deployment**: Vercel, MongoDB
 
 ## Setup Instructions
 

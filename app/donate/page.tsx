@@ -7,7 +7,7 @@ export default function DonatePage() {
         {/* Header Section */}
         <div className="mb-8 text-center max-w-2xl mx-auto">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <img src="/images/design-mode/VITAMEND_LOGO.png" alt="VitaMend logo" className="h-12 w-12" />
+            <img src="/logo.png" alt="VitaMend logo" className="h-12 w-12" />
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Donate Medicines</h1>
           </div>
           <p className="text-lg text-slate-600 dark:text-slate-300 mb-2">

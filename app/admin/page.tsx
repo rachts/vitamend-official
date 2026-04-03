@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Package, CheckCircle, Clock, XCircle, Heart, Leaf, Award, Database } from "lucide-react"
 import Link from "next/link"
-import { getDb, DB_PROVIDER } from "@/lib/db"
+// Removed direct getDb import to fix Vercel build error
+// Analytics data now fetched via API route
 
 // ... existing code (AnalyticsData interface) ...
 interface AnalyticsData {
@@ -49,36 +50,13 @@ export default function AdminDashboard() {
 
   const fetchAnalytics = async () => {
     try {
-      const db = await getDb()
-      const [donations, volunteers] = await Promise.all([db.getDonations(), db.getVolunteers()])
-
-      const statusCounts = { pending: 0, approved: 0, rejected: 0, distributed: 0 }
-      donations.forEach((d) => {
-        const status = d.status as keyof typeof statusCounts
-        if (statusCounts[status] !== undefined) {
-          statusCounts[status]++
-        }
-      })
-
-      setAnalytics({
-        overview: {
-          totalDonations: donations.length,
-          totalUsers: 0,
-          totalVolunteers: volunteers.length,
-          recentDonations: donations.filter((d) => {
-            const created = new Date(d.created_at)
-            return created > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-          }).length,
-          growthRate: 0,
-        },
-        donationsByStatus: statusCounts,
-        impactMetrics: {
-          livesHelped: donations.length * 3,
-          co2Saved: donations.length * 2,
-          wasteReduced: donations.length * 0.5,
-          uniqueMedicines: new Set(donations.map((d) => d.medicine_name)).size,
-        },
-      })
+      const res = await fetch("/api/admin/analytics")
+      const result = await res.json()
+      if (result.success) {
+        setAnalytics(result.data)
+      } else {
+        throw new Error(result.message)
+      }
     } catch (error) {
       console.error("Error fetching analytics:", error)
     } finally {
@@ -123,21 +101,15 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm text-gray-600">Database</p>
-              <Badge variant="default">{DB_PROVIDER.charAt(0).toUpperCase() + DB_PROVIDER.slice(1)} Connected</Badge>
+              <Badge variant="default">MongoDB Connected</Badge>
             </div>
             <div>
               <p className="text-sm text-gray-600">Provider</p>
-              <Badge variant="secondary">{DB_PROVIDER.toUpperCase()}</Badge>
+              <Badge variant="secondary">MONGODB</Badge>
             </div>
             <div>
               <p className="text-sm text-gray-600">Storage</p>
-              <Badge variant="default">
-                {DB_PROVIDER === "supabase"
-                  ? "Supabase Storage"
-                  : DB_PROVIDER === "firebase"
-                    ? "Firebase Storage"
-                    : "Blob Storage"}
-              </Badge>
+              <Badge variant="default">Serverless GridFS</Badge>
             </div>
             <div>
               <p className="text-sm text-gray-600">Environment</p>

@@ -1,10 +1,10 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Analytics } from "@vercel/analytics/next"
 import Providers from "./providers"
 import ClientWrappers from "./_client-wrappers"
 import Navigation from "@/components/navigation"
 import { FirebaseAuthProvider } from "@/components/auth-provider"
+import { ThemeProvider } from "next-themes"
 import { Toaster } from "@/components/ui/toaster"
 import { ErrorBoundary } from "@/components/error-boundary"
 import "./globals.css"
@@ -111,23 +111,24 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://vercel.live" />
 
-        <link rel="preload" href="/images/design-mode/VITAMEND_LOGO.png" as="image" type="image/png" />
+        <link rel="preload" href="/logo.png" as="image" type="image/png" />
       </head>
       <body className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300 antialiased min-h-screen">
         <ErrorBoundary>
           <Providers>
             <ClientWrappers>
-              <FirebaseAuthProvider>
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                <FirebaseAuthProvider>
                 <div className="h-16">
                   <Navigation />
                 </div>
                 <main className="min-h-[calc(100vh-4rem)]">{children}</main>
                 <Toaster />
-              </FirebaseAuthProvider>
+                </FirebaseAuthProvider>
+              </ThemeProvider>
             </ClientWrappers>
           </Providers>
         </ErrorBoundary>
-        <Analytics />
       </body>
     </html>
   )

@@ -9,7 +9,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Database, CheckCircle, XCircle, Loader2, AlertTriangle, ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { DB_PROVIDER, initializeDatabase, type InitResult } from "@/lib/db"
+// Removed direct DB imports to fix Vercel build error
+const DB_PROVIDER = "mongodb";
+interface InitResult {
+  success: boolean;
+  alreadyInitialized?: boolean;
+  message: string;
+}
 
 export default function InitDatabasePage() {
   const { user, loading: authLoading } = useAuth()
@@ -33,7 +39,8 @@ export default function InitDatabasePage() {
     setInitStatus(null)
 
     try {
-      const result = await initializeDatabase()
+      const res = await fetch("/api/admin/init-db", { method: "POST" })
+      const result = await res.json()
       setInitStatus(result)
     } catch (error: any) {
       setInitStatus({
@@ -91,37 +98,8 @@ export default function InitDatabasePage() {
           <div className="text-sm text-muted-foreground space-y-2">
             <p className="font-medium text-foreground">What this will do:</p>
             <ul className="list-disc list-inside space-y-1 ml-2">
-              {DB_PROVIDER === "supabase" && (
-                <>
-                  <li>Create profiles, donations, medicines, and volunteers tables</li>
-                  <li>Set up Row Level Security (RLS) policies</li>
-                  <li>Create necessary indexes for performance</li>
-                </>
-              )}
-              {DB_PROVIDER === "firebase" && (
-                <>
-                  <li>Initialize Firestore collections</li>
-                  <li>Create a _meta/initialized document to track state</li>
-                </>
-              )}
-              {DB_PROVIDER === "mongodb" && (
-                <>
-                  <li>Create collections with proper indexes</li>
-                  <li>Set up validation schemas</li>
-                </>
-              )}
-              {DB_PROVIDER === "mysql" && (
-                <>
-                  <li>Create tables with IF NOT EXISTS</li>
-                  <li>Set up indexes and foreign keys</li>
-                </>
-              )}
-              {DB_PROVIDER === "mock" && (
-                <>
-                  <li>Initialize in-memory storage</li>
-                  <li>Add sample medicines data for testing</li>
-                </>
-              )}
+              <li>Create collections with proper indexes</li>
+              <li>Set up validation schemas</li>
             </ul>
           </div>
 

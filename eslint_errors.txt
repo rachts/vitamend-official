@@ -1,0 +1,138 @@
+app/about/page.tsx
+  Line 89: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+app/contact/page.tsx
+  Line 39: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+  Line 134: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+app/founders/page.tsx
+  Line 27: 'index' is defined but never used. (@typescript-eslint/no-unused-vars)
+app/legal/privacy/page.tsx
+  Line 154: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+app/legal/terms/page.tsx
+  Line 13: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`. (react/no-unescaped-entities)
+  Line 13: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`. (react/no-unescaped-entities)
+app/offline/page.tsx
+  Line 14: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+  Line 18: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+  Line 21: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+  Line 21: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+app/page.tsx
+  Line 252: 'i' is defined but never used. (@typescript-eslint/no-unused-vars)
+  Line 290: 'i' is defined but never used. (@typescript-eslint/no-unused-vars)
+app/shop/cart/page.tsx
+  Line 24: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+  Line 35: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+  Line 44: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+  Line 60: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`. (react/no-unescaped-entities)
+app/shop/page.tsx
+  Line 30: 'ngoPartners' is assigned a value but never used. (@typescript-eslint/no-unused-vars)
+  Line 40: 'pharmacyPartners' is assigned a value but never used. (@typescript-eslint/no-unused-vars)
+app/volunteer/volunteer-form.tsx
+  Line 62: 'watch' is assigned a value but never used. (@typescript-eslint/no-unused-vars)
+backend/config/db.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/controllers/authController.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 2: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/controllers/donationController.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 2: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/controllers/initController.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/controllers/medicineController.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/controllers/profileController.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/controllers/requestController.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/controllers/volunteerController.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/middleware/authMiddleware.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 2: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/middleware/errorMiddleware.js
+  Line 1: 'next' is defined but never used. (@typescript-eslint/no-unused-vars)
+backend/models/Donation.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/models/Medicine.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/models/Request.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/models/User.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 2: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/models/Volunteer.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/routes/authRoutes.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 3: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 4: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/routes/donationRoutes.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 3: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 4: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/routes/initRoutes.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 3: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/routes/medicineRoutes.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 3: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 4: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/routes/profileRoutes.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 3: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 4: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/routes/requestRoutes.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 3: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 4: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/routes/volunteerRoutes.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 3: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 4: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/server.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 2: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 3: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 4: 'path' is assigned a value but never used. (@typescript-eslint/no-unused-vars)
+  Line 4: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 11: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 12: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 26: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 27: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 28: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 29: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 30: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 31: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+  Line 32: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+backend/utils/sendEmail.js
+  Line 1: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)
+components/chatbot.tsx
+  Line 60: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+components/navigation.tsx
+  Line 14: 'scrolled' is assigned a value but never used. (@typescript-eslint/no-unused-vars)
+components/ripple-button.tsx
+  Line 6: 'HTMLMotionProps' is defined but never used. (@typescript-eslint/no-unused-vars)
+components/shop/product-grid.tsx
+  Line 74: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+components/ui/chart.tsx
+  Line 64: '_' is defined but never used. (@typescript-eslint/no-unused-vars)
+components/ui/input.tsx
+  Line 5: An interface declaring no members is equivalent to its supertype. (@typescript-eslint/no-empty-object-type)
+components/ui/textarea.tsx
+  Line 5: An interface declaring no members is equivalent to its supertype. (@typescript-eslint/no-empty-object-type)
+components/ui/use-toast.ts
+  Line 17: 'actionTypes' is assigned a value but only used as a type. (@typescript-eslint/no-unused-vars)
+hooks/use-toast.ts
+  Line 18: 'actionTypes' is assigned a value but only used as a type. (@typescript-eslint/no-unused-vars)
+lib/ai-verification.ts
+  Line 20: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+lib/db/adapters/firebase.ts
+  Line 144: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+  Line 192: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+  Line 266: 'error' is defined but never used. (@typescript-eslint/no-unused-vars)
+lib/two-factor.ts
+  Line 5: 'email' is defined but never used. (@typescript-eslint/no-unused-vars)
+next-env.d.ts
+  Line 3: Do not use a triple slash reference for ./.next/types/routes.d.ts, use `import` style instead. (@typescript-eslint/triple-slash-reference)
+tailwind.config.ts
+  Line 100: A `require()` style import is forbidden. (@typescript-eslint/no-require-imports)

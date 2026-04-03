@@ -7,8 +7,21 @@ export function middleware(req: NextRequest) {
   // CORS for API routes
   const isApi = req.nextUrl.pathname.startsWith("/api")
   const origin = req.headers.get("origin") || ""
-  const allowedOrigins = ["https://vitamend.in", "http://localhost:3000"]
-  const allowOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
+  
+  // Parse allowed origins from env or use defaults
+  const envOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim()) 
+    : []
+  
+  const defaultOrigins = ["https://vitamend.in", "http://localhost:3000"]
+  const allOrigins = envOrigins.concat(defaultOrigins)
+  const allowedOrigins = allOrigins.filter((val, index) => allOrigins.indexOf(val) === index)
+  
+  // Allow Vercel preview deployments and exact matches
+  const isVercelOrigin = origin.endsWith(".vercel.app") || origin.endsWith(".vercel.com")
+  const isAllowed = allowedOrigins.includes(origin) || isVercelOrigin
+  
+  const allowOrigin = isAllowed ? origin : allowedOrigins[0]
 
   if (isApi) {
     response.headers.set("Access-Control-Allow-Origin", allowOrigin)

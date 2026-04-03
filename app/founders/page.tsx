@@ -11,23 +11,21 @@ const founders = [
   {
     name: "Rachit Kumar Tiwari",
     role: "Founder & Developer",
-    image: "/images/img-20250508-025607.jpg",
+    image: "/images/rachit1.jpg",
     linkedin: "https://www.linkedin.com/in/rachitkrtiwari/",
   },
   {
     name: "Nandini Dubey",
     role: "Co-Founder",
-    image: "/images/Nandini Dubey.jpg.jpeg",
+    image: "/images/nandini.jpeg",
     linkedin: "https://www.linkedin.com/in/nandini-dubey-75a67a322/",
   },
 ] as const
 
 const FounderCard = memo(function FounderCard({
   founder,
-  index,
 }: {
   founder: (typeof founders)[number]
-  index: number
 }) {
   return (
     <div
@@ -106,8 +104,8 @@ export default function FoundersPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-          {founders.map((founder, index) => (
-            <FounderCard key={founder.name} founder={founder} index={index} />
+          {founders.map((founder) => (
+            <FounderCard key={founder.name} founder={founder} />
           ))}
         </div>
 
