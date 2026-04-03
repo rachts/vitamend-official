@@ -1,8 +1,9 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useEffect, useState, useCallback } from "react"
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { useSession, signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "next-auth/react"
 
 interface AuthUser {
   id: string
@@ -17,8 +18,8 @@ interface AuthContextType {
   user: AuthUser | null
   loading: boolean
   error: string | null
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string, name: string, role?: string) => Promise<void>
+  signIn: (email: string, password: string) => Promise<any>
+  signUp: (email: string, password: string, name: string, role?: string) => Promise<any>
   signOut: () => void
   logout?: () => void
 }
@@ -26,66 +27,40 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { data: session, status } = useSession()
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  const fetchUserProfile = useCallback(async (token: string) => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/auth/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      const data = await res.json()
-      
-      if (data.success) {
-        setUser({
-          id: data.data._id,
-          email: data.data.email,
-          name: data.data.name,
-          role: data.data.role,
-        })
-      } else {
-        localStorage.removeItem("token")
-        setUser(null)
-      }
-    } catch (err) {
-      console.error("Failed to fetch user profile", err)
-      setUser(null)
-      localStorage.removeItem("token")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const loading = status === "loading"
 
-  useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      fetchUserProfile(token)
-    } else {
-      setLoading(false)
+  // Sync internal user state with NextAuth session
+  const user = useMemo(() => {
+    if (session?.user) {
+      return {
+        id: (session.user as any).id || "",
+        email: session.user.email || "",
+        name: session.user.name || "",
+        role: (session.user as any).role || "user",
+      } as AuthUser
     }
-  }, [fetchUserProfile])
+    return null
+  }, [session])
 
   const signIn = async (email: string, password: string) => {
     setError(null)
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const result = await nextAuthSignIn("credentials", {
+        redirect: false,
+        email,
+        password,
       })
-      const data = await res.json()
 
-      if (data.success) {
-        localStorage.setItem("token", data.data.token)
-        await fetchUserProfile(data.data.token)
-        router.push("/dashboard")
-      } else {
-        throw new Error(data.message || "Invalid credentials")
+      if (result?.error) {
+        setError(result.error)
+        throw new Error(result.error)
       }
+      
+      return result
     } catch (err: any) {
       setError(err.message)
       throw err
@@ -95,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, name: string, role = "user") => {
     setError(null)
     try {
+      // First register via the custom API
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -103,9 +79,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json()
 
       if (data.success) {
-        localStorage.setItem("token", data.data.token)
-        await fetchUserProfile(data.data.token)
-        router.push("/dashboard")
+        // Then automatically sign in via NextAuth
+        return await signIn(email, password)
       } else {
         throw new Error(data.message || "Registration failed")
       }
@@ -116,9 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = () => {
-    localStorage.removeItem("token")
-    setUser(null)
-    router.push("/")
+    nextAuthSignOut({ callbackUrl: "/" })
   }
 
   return (

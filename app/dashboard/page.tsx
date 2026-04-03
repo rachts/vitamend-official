@@ -10,13 +10,10 @@ export default function DashboardPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading) {
-      const token = localStorage.getItem("token")
-      if (!token) {
-        router.push("/auth/signin")
-      }
+    if (!loading && !user) {
+      router.push("/auth/signin")
     }
-  }, [loading, router])
+  }, [loading, user, router])
 
   if (loading) {
     return (

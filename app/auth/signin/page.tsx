@@ -27,7 +27,7 @@ export default function SignIn() {
   }, [])
 
   useEffect(() => {
-    if (user || (typeof window !== 'undefined' && localStorage.getItem("token"))) {
+    if (user) {
       router.push("/dashboard")
     }
   }, [user, router])
@@ -37,12 +37,15 @@ export default function SignIn() {
     setIsLoading(true)
 
     try {
-      await signIn(email, password)
-      toast({
-        title: "Success",
-        description: "Signed in successfully",
-      })
-      router.push("/dashboard")
+      const result = await signIn(email, password)
+      
+      if (result?.ok) {
+        toast({
+          title: "Success",
+          description: "Signed in successfully",
+        })
+        router.push("/dashboard")
+      }
     } catch (error: any) {
       toast({
         title: "Error",
