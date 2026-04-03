@@ -107,7 +107,7 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5005');
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
         const [medicinesRes, usersRes, volunteersRes] = await Promise.all([
           fetch(`${API_URL}/api/medicines`).catch(() => null),
           fetch(`${API_URL}/api/auth/users`).catch(() => null),
