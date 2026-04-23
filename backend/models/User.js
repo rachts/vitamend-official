@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['user', 'admin', 'volunteer', 'ngo'], default: 'user' },
+  role: { type: String, enum: ['user', 'admin', 'volunteer', 'ngo', 'donor', 'Donate Medicines'], default: 'user' },
   phone: { type: String },
   address: { type: String },
 }, { timestamps: true });
@@ -24,4 +24,4 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);

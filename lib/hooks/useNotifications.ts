@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useAuth } from "@/context/AuthContext"
+import { useSession } from "next-auth/react"
 
 interface Notification {
   id: string
@@ -14,7 +14,8 @@ interface Notification {
 }
 
 export function useNotifications() {
-  const { user } = useAuth()
+  const { data: session } = useSession()
+  const user = session?.user
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)

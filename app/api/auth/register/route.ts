@@ -13,6 +13,9 @@ export async function POST(req: NextRequest) {
   try {
     await connectMongoose();
     const { name, email, password, role, phone, address } = await req.json();
+    
+    console.log("Incoming registration payload:");
+    console.log({ name, email, password, role, phone, address });
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -22,7 +25,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await User.create({ name, email, password, role, phone, address });
+    const roleMap: any = {
+      "Donate Medicines": "donor",
+      "volunteer": "volunteer",
+    };
+    const normalizedRole = roleMap[role] || role;
+
+    const user = await User.create({ name, email, password, role: normalizedRole, phone, address });
 
     if (user) {
       return NextResponse.json(
@@ -46,9 +55,17 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error: any) {
-    console.error("Register API Error:", error);
+    console.error("Register API Error Details:", JSON.stringify(error, null, 2));
+    console.error("Register API Error Message:", error.message);
+    
+    // Improve error message for pattern failures
+    let errorMessage = error.message;
+    if (errorMessage && errorMessage.includes("did not match the expected pattern")) {
+      errorMessage = "Validation failed: Password must contain at least 1 uppercase letter, 1 number, and 1 special character. Name must not contain invalid characters, and Email must be correctly formatted.";
+    }
+
     return NextResponse.json(
-      { success: false, message: error.message },
+      { success: false, message: errorMessage, details: error },
       { status: 500 }
     );
   }

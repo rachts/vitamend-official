@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useAuth } from "@/context/AuthContext"
-import { redirect } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -36,17 +36,20 @@ interface AnalyticsData {
 }
 
 export default function AdminDashboard() {
-  const { user, loading: authLoading } = useAuth()
+  const { data: session, status } = useSession()
+  const user = session?.user
+  const router = useRouter()
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (authLoading) return
-    if (!user) {
-      redirect("/auth/signin")
+    if (status === "loading") return;
+    if (!session) {
+      router.push("/auth/signin")
+    } else {
+      fetchAnalytics()
     }
-    fetchAnalytics()
-  }, [user, authLoading])
+  }, [session, status, router])
 
   const fetchAnalytics = async () => {
     try {
@@ -64,7 +67,7 @@ export default function AdminDashboard() {
     }
   }
 
-  if (loading || authLoading) {
+  if (loading || status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

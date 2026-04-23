@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useAuth } from "@/context/AuthContext"
-import { redirect } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -18,20 +18,22 @@ interface InitResult {
 }
 
 export default function InitDatabasePage() {
-  const { user, loading: authLoading } = useAuth()
+  const { data: session, status } = useSession()
+  const user = session?.user
+  const router = useRouter()
   const [initStatus, setInitStatus] = useState<InitResult | null>(null)
   const [isInitializing, setIsInitializing] = useState(false)
 
   // Redirect non-authenticated users
-  if (!authLoading && !user) {
-    redirect("/auth/signin")
+  if (status !== "loading" && !user) {
+    router.push("/auth/signin")
   }
 
   // Check if user is admin (you can customize this based on your auth setup)
-  const isAdmin = user?.role === "admin" || user?.email?.endsWith("@vitamend.org")
+  const isAdmin = user?.role === "admin" || (user?.email && user.email.endsWith("@vitamend.org"))
 
-  if (!authLoading && !isAdmin) {
-    redirect("/dashboard")
+  if (status !== "loading" && user && !isAdmin) {
+    router.push("/dashboard")
   }
 
   const handleInitialize = async () => {
@@ -52,7 +54,7 @@ export default function InitDatabasePage() {
     }
   }
 
-  if (authLoading) {
+  if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

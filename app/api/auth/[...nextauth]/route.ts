@@ -21,11 +21,16 @@ export const authOptions: NextAuthOptions = {
           const user = await User.findOne({ email: credentials.email });
 
           if (user && (await (user as any).matchPassword(credentials.password))) {
+            let normalizedRole = user.role;
+            if (normalizedRole === "Donate Medicines") {
+              normalizedRole = "donor";
+            }
+            
             return {
               id: user._id.toString(),
               name: user.name,
               email: user.email,
-              role: user.role,
+              role: normalizedRole,
             };
           }
           return null;
@@ -41,6 +46,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
+        token.email = user.email;
       }
       return token;
     },
@@ -48,6 +54,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
+        session.user.email = token.email as string;
       }
       return session;
     }

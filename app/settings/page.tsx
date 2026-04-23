@@ -1,7 +1,7 @@
 "use client"
 
-import { useAuth } from "@/context/AuthContext"
-import { redirect } from "next/navigation"
+import { useSession, signOut as nextAuthSignOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,15 +12,19 @@ import { Settings, Bell, Shield, User } from "lucide-react"
 import { useEffect } from "react"
 
 export default function SettingsPage() {
-  const { user, loading, logout } = useAuth()
+  const { data: session, status } = useSession()
+  const user = session?.user
+  const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !user) {
-      redirect("/auth/signin")
-    }
-  }, [user, loading])
+    if (status === "loading") return;
 
-  if (loading) {
+    if (!session) {
+      router.push("/auth/signin")
+    }
+  }, [session, status, router])
+
+  if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
@@ -126,7 +130,7 @@ export default function SettingsPage() {
                   <p className="font-medium">Sign Out</p>
                   <p className="text-sm text-muted-foreground">Sign out of your account</p>
                 </div>
-                <Button variant="destructive" size="sm" onClick={logout}>
+                <Button variant="destructive" size="sm" onClick={() => nextAuthSignOut({ callbackUrl: '/' })}>
                   Sign Out
                 </Button>
               </div>

@@ -7,13 +7,14 @@ import { useEffect, useState } from "react"
 import { Menu, X } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { useAuth } from "@/context/AuthContext"
+import { useSession, signOut } from "next-auth/react"
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
-  const { user, signOut } = useAuth()
+  const { data: session } = useSession()
+  const user = session?.user
 
   const navItems = ["Donate", "Volunteer", "Store", "Transparency", "Founders"]
 

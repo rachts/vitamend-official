@@ -21,4 +21,4 @@ const volunteerSchema = new mongoose.Schema({
   status: { type: String, enum: ['pending', 'approved', 'rejected', 'inactive'], default: 'pending' }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Volunteer', volunteerSchema);
+module.exports = mongoose.models.Volunteer || mongoose.model('Volunteer', volunteerSchema);

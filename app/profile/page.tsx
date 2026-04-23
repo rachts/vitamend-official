@@ -1,7 +1,7 @@
 "use client"
 
-import { useAuth } from "@/context/AuthContext"
-import { redirect } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,17 +9,21 @@ import { User, Mail, Calendar, Award, Heart } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth()
+  const { data: session, status } = useSession()
+  const user = session?.user
+  const router = useRouter()
   const [donationCount, setDonationCount] = useState(0)
 
   useEffect(() => {
-    if (!loading && !user) {
-      redirect("/auth/signin")
+    if (status === "loading") return;
+
+    if (!session) {
+      router.push("/auth/signin")
     }
     if (user) {
       fetchUserDonations()
     }
-  }, [user, loading])
+  }, [user, session, status, router])
 
   const fetchUserDonations = async () => {
     if (!user) return
@@ -36,7 +40,7 @@ export default function ProfilePage() {
     }
   }
 
-  if (loading) {
+  if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>

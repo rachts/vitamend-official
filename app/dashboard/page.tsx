@@ -1,21 +1,23 @@
 "use client"
 
-import { useAuth } from "@/context/AuthContext"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { motion } from "framer-motion"
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth()
+  const { data: session, status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (status === "loading") return;
+
+    if (!session) {
       router.push("/auth/signin")
     }
-  }, [loading, user, router])
+  }, [session, status, router])
 
-  if (loading) {
+  if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -23,7 +25,9 @@ export default function DashboardPage() {
     )
   }
 
-  if (!user) return null;
+  if (!session?.user) return null;
+
+  const user = session.user;
 
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-br from-blue-50 via-white to-purple-50">

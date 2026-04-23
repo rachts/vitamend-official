@@ -17,6 +17,11 @@ export async function POST(req: NextRequest) {
     const user = await User.findOne({ email });
 
     if (user && (await (user as any).matchPassword(password))) {
+      let normalizedRole = user.role;
+      if (normalizedRole === "Donate Medicines") {
+        normalizedRole = "donor";
+      }
+
       return NextResponse.json({
         success: true,
         message: "Login successful",
@@ -24,7 +29,7 @@ export async function POST(req: NextRequest) {
           _id: user._id,
           name: user.name,
           email: user.email,
-          role: user.role,
+          role: normalizedRole,
           token: generateToken(user._id.toString()),
         },
       });

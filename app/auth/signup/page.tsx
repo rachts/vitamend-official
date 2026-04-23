@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/components/ui/use-toast"
-import { useAuth } from "@/context/AuthContext"
+import { signIn } from "next-auth/react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -19,7 +19,7 @@ export default function SignUp() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "donor",
+    role: "Donate Medicines",
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -27,7 +27,7 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-  const { signUp } = useAuth()
+
 
   useEffect(() => {
     setMounted(true)
@@ -57,12 +57,36 @@ export default function SignUp() {
     setIsLoading(true)
 
     try {
-      await signUp(formData.email, formData.password, formData.name, formData.role)
+      // Register via API
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role
+        }),
+      });
+      
+      const data = await res.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || "Registration failed");
+      }
+
       toast({
         title: "Success",
         description: "Account created successfully!",
       })
-      router.push("/dashboard")
+      
+      // Sign in automatically via NextAuth and redirect
+      await signIn("credentials", {
+        redirect: true,
+        callbackUrl: "/dashboard",
+        email: formData.email,
+        password: formData.password,
+      });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -124,7 +148,7 @@ export default function SignUp() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="donor">Donate Medicines</SelectItem>
+                  <SelectItem value="Donate Medicines">Donate Medicines</SelectItem>
                   <SelectItem value="volunteer">Volunteer</SelectItem>
                 </SelectContent>
               </Select>

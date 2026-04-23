@@ -12,4 +12,4 @@ const medicineSchema = new mongoose.Schema({
   images: [{ type: String }],
 }, { timestamps: true });
 
-module.exports = mongoose.model('Medicine', medicineSchema);
+module.exports = mongoose.models.Medicine || mongoose.model('Medicine', medicineSchema);

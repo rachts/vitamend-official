@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useAuth } from "@/context/AuthContext"
+import { useSession } from "next-auth/react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -19,7 +19,8 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
-  const { user, loading } = useAuth()
+  const { data: session, status } = useSession()
+  const user = session?.user
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
 
@@ -49,7 +50,7 @@ export default function NotificationsPage() {
     }
   }
 
-  if (!user && !loading) {
+  if (!user && status !== "loading") {
     return (
       <div className="container mx-auto py-8">
         <Card>
@@ -80,7 +81,7 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      {loading ? (
+      {status === "loading" ? (
         <div className="flex items-center justify-center py-8">Loading...</div>
       ) : notifications.length === 0 ? (
         <Card>

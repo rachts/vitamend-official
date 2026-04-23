@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useAuth } from "@/context/AuthContext"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -25,7 +25,8 @@ interface Notification {
 }
 
 export function NotificationBell() {
-  const { user } = useAuth()
+  const { data: session } = useSession()
+  const user = session?.user
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [isOpen, setIsOpen] = useState(false)

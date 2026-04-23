@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
-import { useAuth } from "@/context/AuthContext"
+import { signIn } from "next-auth/react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -20,36 +20,39 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-  const { user, signIn } = useAuth()
+
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  useEffect(() => {
-    if (user) {
-      router.push("/dashboard")
-    }
-  }, [user, router])
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      const result = await signIn(email, password)
+      const result = await signIn("credentials", {
+        redirect: true,
+        callbackUrl: "/dashboard",
+        email,
+        password,
+      })
       
-      if (result?.ok) {
+      // If redirect: true is used, NextAuth handles successful navigation automatically.
+      // We only reach here if there was an error preventing redirect, or if redirect is handled differently in this version.
+      if (result?.error) {
         toast({
-          title: "Success",
-          description: "Signed in successfully",
+          title: "Error",
+          description: result.error || "Invalid credentials",
+          variant: "destructive",
         })
-        router.push("/dashboard")
       }
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "Invalid credentials",
+        description: "An unexpected error occurred",
         variant: "destructive",
       })
     } finally {
