@@ -25,9 +25,9 @@ def ensure_max_bytes(raw: bytes, max_bytes: int) -> None:
 
 
 DATE_PATTERNS = [
-    r"(?:0[1-9]|[12]\d|3[01])[-/](?:0[1-9]|1[0-2])[-/](?:20\d{2}|\d{2})",
-    r"(?:0[1-9]|1[0-2])[-/](?:20\d{2}|\d{2})",
-    r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{4}",
+    r"(?:0[1-9]|[12]\d|3[01])[-/.\s](?:0[1-9]|1[0-2])[-/.\s](?:20\d{2}|\d{2})",
+    r"(?:0[1-9]|1[0-2])[-/.\s](?:20\d{2}|\d{2})",
+    r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[-/.\s]*\d{2,4}",
 ]
 
 
@@ -41,8 +41,12 @@ def parse_expiry_candidates(text: str) -> List[str]:
     return found
 
 
+from datetime import date, datetime
+from dateutil import parser as dateparser
+
 def normalize_date(s: str) -> date:
-    dt = dateparser.parse(s, fuzzy=True, dayfirst=True)
+    # Use default with day=1 so "MM/YYYY" defaults to the 1st of the month
+    dt = dateparser.parse(s, fuzzy=True, dayfirst=True, default=datetime(2000, 1, 1))
     y, m, d = dt.year, dt.month, dt.day
     return date(y, m, d)
 
@@ -56,5 +60,20 @@ def sanitize_text(s: str, max_len: int = 2000) -> str:
 def extract_batch_code(text: str) -> Optional[str]:
     if not text:
         return None
-    m = re.search(r"(?:batch(?:\s*no)?|lot)[:#]?\s*([A-Za-z0-9\-_\/]{3,24})", text, flags=re.IGNORECASE)
+    m = re.search(r"(?:batch(?:\s*no\.?)?|lot|b\.?no\.?)[:#\s]*([A-Za-z0-9\-_\/]{3,24})", text, flags=re.IGNORECASE)
     return m.group(1) if m else None
+
+
+def extract_medicine_name(text: str) -> Optional[str]:
+    if not text:
+        return None
+    # Look for capitalized words followed by dosage (mg, ml, etc)
+    patterns = [
+        r"([A-Z][a-zA-Z]{2,}(?:\s+[A-Z][a-zA-Z]*)*)\s+(?:\d+\s*(?:mg|ml|g))",
+        r"([A-Z][a-zA-Z]{2,}(?:\s+[A-Z][a-zA-Z]*)*)\s+(?:Tablets|Capsules|Syrup|Injection)",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text)
+        if m:
+            return m.group(1).strip()
+    return None

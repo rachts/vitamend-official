@@ -95,40 +95,68 @@ export default function DonationForm() {
     setIsProcessingOCR(true)
 
     try {
-      const imageUrl = await preprocessImage(file);
-
       toast({
         title: "AI Processing Image",
-        description: "Extracting medicine information...",
+        description: "Extracting medicine information using our backend service...",
       })
 
-      const [validation, expiryDate, medicineNames] = await Promise.all([
-        OCRService.validateMedicineImage(imageUrl),
-        OCRService.extractExpiryDate(imageUrl),
-        OCRService.extractMedicineName(imageUrl),
-      ])
+      const result = await OCRService.processImage(file)
 
-      if (medicineNames.length > 0 && !formData.medicineName) {
-        setFormData((prev) => ({ ...prev, medicineName: medicineNames[0] }))
+      // Auto-fill medicine name if found
+      if (result.medicine_name && !formData.medicineName) {
+        setFormData((prev) => ({ 
+          ...prev, 
+          medicineName: result.medicine_name as string,
+          brand: result.medicine_name as string // Often the brand is what's largest on the pack
+        }))
+        toast({
+          title: "Medicine Detected",
+          description: `Auto-filled: ${result.medicine_name}`,
+        })
       }
 
-      if (expiryDate && !formData.expiryDate) {
-        const formattedDate = expiryDate.toISOString().split("T")[0]
-        setFormData((prev) => ({ ...prev, expiryDate: formattedDate }))
+      // Auto-fill expiry date if found
+      if (result.expiry && !formData.expiryDate) {
+        setFormData((prev) => ({ ...prev, expiryDate: result.expiry as string }))
+        toast({
+          title: "Expiry Date Detected",
+          description: `Auto-filled: ${result.expiry}`,
+        })
       }
 
-      if (validation.isValid) {
+      // Auto-fill batch if available (we'll prepend it to notes for now)
+      if (result.batch) {
+        setFormData((prev) => ({ 
+          ...prev, 
+          notes: prev.notes ? `${prev.notes}\nBatch Code: ${result.batch}` : `Batch Code: ${result.batch}`
+        }))
+      }
+
+      // Handle validation results
+      if (result.tampered) {
+        toast({
+          title: "Security Warning",
+          description: "Potential tampering detected in the packaging. Please review manually.",
+          variant: "destructive",
+        })
+      } else if (result.expired) {
+        toast({
+          title: "Medicine Expired",
+          description: "Our AI detected this medicine has already expired.",
+          variant: "destructive",
+        })
+      } else if (!result.needs_review) {
         toast({
           title: "Medicine Verified",
-          description: `AI confidence: ${Math.round(validation.confidence)}%`,
+          description: `AI confidence: ${Math.round(result.confidence * 100)}%`,
         })
       } else {
         toast({
-          title: "Verification Issues",
-          description: validation.issues.join(", "),
-          variant: "destructive",
+          title: "Review Required",
+          description: "Some details couldn't be fully verified. Please check manually.",
         })
       }
+
     } catch (error) {
       console.error("OCR error:", error)
       toast({

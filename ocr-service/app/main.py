@@ -32,6 +32,7 @@ from .utils import (
     normalize_date,
     sanitize_text,
     extract_batch_code,
+    extract_medicine_name,
 )
 
 load_dotenv()
@@ -110,7 +111,7 @@ async def ocr_check(file: UploadFile = File(...), db=Depends(get_db)) -> JSONRes
     try:
         proc = await run_in_threadpool(preprocess_image, img)
         ocr_res, qr_text = await _run_with_timeout(
-            asyncio.gather(ocr_with_conf_async(proc.thresh), decode_qr_text_async(proc.gray)),
+            asyncio.gather(ocr_with_conf_async(proc.gray, proc.thresh), decode_qr_text_async(img)),
             OCR_TIMEOUT_SECONDS,
             "OCR timed out",
         )
@@ -176,17 +177,23 @@ async def ocr_check(file: UploadFile = File(...), db=Depends(get_db)) -> JSONRes
             except Exception:
                 pass
 
+        medicine_name = extract_medicine_name(text)
+
         resp = {
             "expiry": doc["final_expiry"],
             "batch": batch,
+            "medicine_name": medicine_name,
             "qr_expiry": doc["expiry_qr"],
             "expired": expired,
             "tampered": tampered,
             "confidence": round(avg_conf, 4),
             "needs_review": needs_review,
+            "raw_text": safe_text,
         }
         return JSONResponse(status_code=200, content=resp)
     except HTTPException:
         raise
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail="Internal server error") from e

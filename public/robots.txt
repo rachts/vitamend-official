@@ -1,5 +1,5 @@
 # VitaMend - Medicine Donation Platform
-# https://vitamend.in
+# https://vitamend-org.vercel.app
 
 User-agent: *
 Allow: /
@@ -21,7 +21,7 @@ Disallow: /admin/
 Disallow: /dashboard/
 
 # Sitemap
-Sitemap: https://vitamend.in/sitemap.xml
+Sitemap: https://vitamend-org.vercel.app/sitemap.xml
 
 # Host
-Host: https://vitamend.in
+Host: https://vitamend-org.vercel.app   
