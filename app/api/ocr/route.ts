@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { processImageWithNodeOCR } from "@/lib/ai/node-ocr-pipeline";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,27 +10,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Forward the file to the Python OCR service
-    const pythonServiceUrl = process.env.OCR_SERVICE_URL || "http://localhost:8001/api/ocr-check";
-    
-    const forwardData = new FormData();
-    forwardData.append("file", file);
+    // Convert the File object to a Node.js Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    const response = await fetch(pythonServiceUrl, {
-      method: "POST",
-      body: forwardData,
-    });
+    // Process the image locally using the new native Node.js pipeline
+    const data = await processImageWithNodeOCR(buffer);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Python OCR Service Error:", errorText);
-      return NextResponse.json({ error: "OCR service failed" }, { status: response.status });
-    }
-
-    const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("OCR API Proxy Error:", error);
+    console.error("Node OCR Pipeline Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
