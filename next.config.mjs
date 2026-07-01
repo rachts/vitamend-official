@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// Force restart to clear mongoose model cache
 const nextConfig = {
   reactStrictMode: true,
   

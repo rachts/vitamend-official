@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['user', 'admin', 'volunteer', 'ngo', 'donor', 'Donate Medicines'], default: 'user' },
   phone: { type: String },
   address: { type: String },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date }
 }, { timestamps: true });
 
 // Match user entered password to hashed password in database
@@ -16,9 +18,9 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
 };
 
 // Encrypt password using bcrypt
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function() {
   if (!this.isModified('password')) {
-    return next();
+    return;
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);

@@ -91,7 +91,12 @@ export default function SignIn() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-600 dark:text-gray-300 font-semibold">Password</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="password" className="text-gray-600 dark:text-gray-300 font-semibold">Password</Label>
+                <Link href="/auth/forgot-password" className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium transition-colors">
+                  Forgot Password?
+                </Link>
+              </div>
               <div className="relative">
                 <Input
                   id="password"
