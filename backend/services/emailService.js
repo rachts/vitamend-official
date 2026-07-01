@@ -1,62 +1,53 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// Abstracted email service so it can be swapped out later (e.g., with Resend or SendGrid)
 class EmailService {
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail', // You can change this to another provider or SMTP details
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    // We will initialize the Resend client dynamically if the API key is present
+    this.resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
   }
 
   /**
-   * Sends an email.
+   * Sends an email using the Resend API.
    * @param {Object} options - The email options.
    * @param {string} options.to - Recipient email.
    * @param {string} options.subject - Email subject.
    * @param {string} options.html - HTML body of the email.
    */
   async sendEmail({ to, subject, html }) {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      throw new Error('Email credentials (EMAIL_USER, EMAIL_PASS) not set in backend/.env');
+    if (!this.resend) {
+      throw new Error('RESEND_API_KEY not set in backend/.env');
     }
 
     try {
-      const mailOptions = {
-        from: `VitaMend <${process.env.EMAIL_USER}>`,
+      const { data, error } = await this.resend.emails.send({
+        from: 'VitaMend <onboarding@resend.dev>', // Resend test email
         to,
         subject,
         html,
-      };
+      });
 
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log(`Email sent: ${info.messageId}`);
-      return info;
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      console.log(`Email sent via Resend: ${data.id}`);
+      return data;
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error sending email:', error.message);
       throw new Error('Email could not be sent');
     }
   }
 
   /**
-   * Verifies the SMTP connection
+   * Checks if Resend API key is configured.
    */
-  async verifyConnection() {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('WARNING: Email credentials missing, verification skipped.');
+  verifyConnection() {
+    if (!this.resend) {
+      console.warn('WARNING: RESEND_API_KEY is missing. Emails will fail to send.');
       return false;
     }
-    try {
-      await this.transporter.verify();
-      console.log('Server is ready to take our messages');
-      return true;
-    } catch (error) {
-      console.error('Email configuration error (invalid credentials?):', error);
-      return false;
-    }
+    console.log('Resend API is configured and ready to send emails.');
+    return true;
   }
 
   /**
@@ -97,3 +88,4 @@ class EmailService {
 const emailService = new EmailService();
 
 module.exports = emailService;
+
