@@ -21,8 +21,7 @@ class EmailService {
    */
   async sendEmail({ to, subject, html }) {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('WARNING: Email credentials (EMAIL_USER, EMAIL_PASS) not set in .env. Email will not be sent.');
-      return;
+      throw new Error('Email credentials (EMAIL_USER, EMAIL_PASS) not set in backend/.env');
     }
 
     try {
@@ -43,12 +42,33 @@ class EmailService {
   }
 
   /**
+   * Verifies the SMTP connection
+   */
+  async verifyConnection() {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('WARNING: Email credentials missing, verification skipped.');
+      return false;
+    }
+    try {
+      await this.transporter.verify();
+      console.log('Server is ready to take our messages');
+      return true;
+    } catch (error) {
+      console.error('Email configuration error (invalid credentials?):', error);
+      return false;
+    }
+  }
+
+  /**
    * Sends a password reset email to the user.
    * @param {string} email - The user's email address.
    * @param {string} resetToken - The plain text reset token.
    */
   async sendPasswordResetEmail(email, resetToken) {
-    const frontendUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    if (!process.env.FRONTEND_URL && !process.env.NEXTAUTH_URL) {
+      console.warn("WARNING: FRONTEND_URL or NEXTAUTH_URL is missing. Reset link might be incorrect.");
+    }
+    const frontendUrl = process.env.FRONTEND_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
     const resetUrl = `${frontendUrl}/auth/reset-password?token=${resetToken}`;
 
     const html = `

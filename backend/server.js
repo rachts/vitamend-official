@@ -12,6 +12,9 @@ const { errorHandler } = require('./middleware/errorMiddleware');
 // Load env vars
 dotenv.config({ path: "./backend/.env" });
 
+const emailService = require('./services/emailService');
+emailService.verifyConnection();
+
 // Connect to database
 connectDB();
 
