@@ -1,27 +1,21 @@
 import React from 'react';
-
 interface PasswordStrengthProps {
   password?: string;
 }
-
 const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password = '' }) => {
   const getStrength = (pass: string) => {
     let score = 0;
     if (!pass) return { score, text: '', color: 'bg-gray-200 dark:bg-slate-700' };
-
     if (pass.length > 8) score += 1;
     if (/[A-Z]/.test(pass)) score += 1;
     if (/[a-z]/.test(pass)) score += 1;
     if (/[0-9]/.test(pass)) score += 1;
     if (/[^A-Za-z0-9]/.test(pass)) score += 1;
-
     if (score <= 2) return { score, text: 'Weak', color: 'bg-red-500' };
     if (score <= 4) return { score, text: 'Medium', color: 'bg-yellow-500' };
     return { score, text: 'Strong', color: 'bg-green-500' };
   };
-
   const { score, text, color } = getStrength(password);
-
   return (
     <div className="w-full space-y-1.5 mt-2">
       <div className="flex justify-between items-center text-xs">
@@ -45,5 +39,4 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password = '' }) =>
     </div>
   );
 };
-
 export default PasswordStrength;
